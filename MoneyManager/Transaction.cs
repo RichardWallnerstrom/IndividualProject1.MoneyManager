@@ -21,7 +21,7 @@ namespace MoneyManager
         public decimal Amount { get; set; }
         public DateTime Date { get; set; }
         public bool IsIncome { get; set; }
-        public static (string, decimal, DateTime) StartTransaction()
+        private static (string, decimal, DateTime) getTransactionData()
         {
             Program.Print("\n 1. Title? ", CC.Cyan);
             string title = Display.GetLine();
@@ -43,14 +43,22 @@ namespace MoneyManager
                     Program.Print($"\n\n{input} is not a valid date.\n Try YEAR-MONTH-DAY \n\n", CC.Red);
                     input = Display.GetLine();
                 }
+                Console.Clear();
                 return (title, amount, date);
             }
         }
+        public static Transaction AddTransaction(bool isIncome)
+        {
+            var objectFields = getTransactionData();
+            Transaction newTransaction = new Transaction(objectFields.Item1, objectFields.Item2, objectFields.Item3, isIncome);
+            return newTransaction;
+        }
         public static void ViewTransactions(List<Transaction> transactionList)
         {
-            Program.Print($"\n Title Amount Date", CC.DarkYellow);
+            Program.Print("\n Title".PadRight(20) + "Amount".PadRight(20) + "Date".PadRight(20), CC.DarkYellow);
+            Program.Print("\n\n -------------------------------- \n |", CC.DarkBlue);
             foreach (Transaction item in transactionList)
-                Program.Print($"\n {item.Title.PadRight(20)} {item.Amount} {item.Date}", CC.Cyan);
+                Program.Print($"\n {item.Title.PadRight(20)} {item.Amount}".PadRight(20) + $" {item.Date}".PadRight(20), CC.Cyan);
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using CC = System.ConsoleColor;
+﻿using System;
+using System.Text.RegularExpressions;
+using CC = System.ConsoleColor;
 
 namespace MoneyManager
 {
@@ -13,46 +15,38 @@ namespace MoneyManager
         }
         static void Main()
         {
-            Print("\n\n -------------------------------- \n |", CC.DarkBlue);
-            Print(" Welcome to the Money Manager ", CC.DarkYellow);
-            Print("|\n -------------------------------- \n\n", CC.DarkBlue);
             List<Transaction> transactionList = new List<Transaction>();
+            Display.StartAnimation();
             while (true)  // Main loop
             {
                 string input = Display.MainMenu();
-                if (input == "a" || input == "1")   // Add transaction loop
+                if (Regex.IsMatch(input, "^(1|a)$"))   // Add transaction loop
                 {
                     while (true)
                     {
-                        input = Display.ChooseTransaction();  // Add Income
-                        if (input == "i" || input == "1")
+                        input = Display.ChooseTransaction(); // Add Income
+                        if (Regex.IsMatch(input, "^(1|i)$"))
                         {
-                            var myTuple = Transaction.StartTransaction();
-                            Transaction newTransaction = new Transaction(myTuple.Item1, myTuple.Item2, myTuple.Item3, true);
-                            transactionList.Add(newTransaction);
+                            transactionList.Add(Transaction.AddTransaction(Regex.IsMatch(input, "^(1|i)$")));  //create boolean, then object
                         }
-                        else if (input == "e" || input == "2")  // Add expense
+                        else if (Regex.IsMatch(input, "^(3|q|x)$"))  // Return
                         {
-                            var myTuple = Transaction.StartTransaction();
-                            Transaction newTransaction = new Transaction(myTuple.Item1, myTuple.Item2, myTuple.Item3, false);
-                            transactionList.Add(newTransaction);
-                        }
-                        else if (input == "q" || input == "3")  // Return
-                        {
-                            Print("\n\n Returning to Main Menu\n\n", CC.Magenta);
+                            Console.Clear();
                             break;
                         }
                         else
                         {
-                            Program.Print($"{input} is not a valid option");
+                            Console.Clear();
+                            Program.Print($"\n\n{input} is not a valid option\n\n");
                         }
                     }
                 }
-                else if (input == "v" || input == "2")
+                else if (Regex.IsMatch(input, "^(2|v|d)$"))  // View transactions
                 {
                     Transaction.ViewTransactions(transactionList);
+                    input = Display.EditOptions();
                 }
-                else if (input == "q" || input == "4")
+                else if (Regex.IsMatch(input, "^(3|q|x)$"))
                 {
                     Print("\n\n Saving and Exiting application...\n\n", CC.Red);
                     break;
