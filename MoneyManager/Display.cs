@@ -12,7 +12,7 @@ namespace MoneyManager
 {
     public static class Display  // I will need many different Option classes derived from this class
     {
-        private static string GetKey()
+        public static string GetKey()
         {
             ConsoleKeyInfo keyInfo = Console.ReadKey(true); //Hide the key from the console
             char userInput = char.ToLower(keyInfo.KeyChar);
@@ -23,42 +23,7 @@ namespace MoneyManager
             string userInput = Console.ReadLine();
             return (userInput.ToString() != null) ? userInput.ToString() : string.Empty;
         }
-        public static string MainMenu()
-        {
-            Program.Print($"\n      Main Menu".PadLeft(10), CC.DarkYellow);
-            Program.Print("\n----------------------------------------------------------------------------\n", CC.DarkBlue);
-            Program.Print( $" 1. Add new transaction\n" +
-                            " 2. View transactions\n" +
-                            " 3. Save and Exit\n", CC.Cyan);
-            Program.Print("----------------------------------------------------------------------------\n", CC.DarkBlue);
-            Program.Print(" Select an option: ", CC.Green);
-            return GetKey();
-        }
-        public static string EditOptions()
-        {
-            Program.Print($"\n      Edit Menu".PadLeft(10), CC.DarkYellow);
-            Program.Print("\n----------------------------------------------------------------------------\n", CC.DarkBlue);
-            Program.Print( $" 1. Edit Description\n" +
-                            " 2. Edit Date\n" +
-                            " 3. Edit Amount\n" +
-                            " 4. Remove Transaction\n" +
-                            " 5. Back to Main Menu\n", CC.Cyan);
-            Program.Print("----------------------------------------------------------------------------\n", CC.DarkBlue);
-            Program.Print(" Select an option: ", CC.Green);
-            return GetKey();
-        }
-        public static string ChooseTransaction()
-        {
-            Console.Clear();
-            Program.Print($"\n      Choose Transaction Type".PadLeft(10), CC.DarkYellow);
-            Program.Print("\n----------------------------------------------------------------------------\n", CC.DarkBlue);
-            Program.Print( $" 1. Add Income \n" +
-                            " 2. Add Expense \n" +
-                            " 3. Back to Main Menu\n", CC.Cyan);
-            Program.Print("----------------------------------------------------------------------------\n", CC.DarkBlue);
-            Program.Print(" Select an option: ", CC.Green);
-            return GetKey();
-        }
+        
         public static void StartAnimation()
         {
             string message = "  Welcome to the Money Manager ";

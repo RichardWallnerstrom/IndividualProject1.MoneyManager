@@ -15,40 +15,34 @@ namespace MoneyManager
         }
         static void Main()
         {
-            List<Transaction> transactionList = new List<Transaction>();
+            Transaction.TransactionList.Add(new Transaction("Salary", 16000, new DateTime(2023,10,26), true));
+            Transaction.TransactionList.Add(new Transaction("Tip", 1600, new DateTime(2023,10,26), true));
+            Transaction.TransactionList.Add(new Transaction("Rent", 8000, new DateTime(2023,10,26), false));
+            Transaction.TransactionList.Add(new Transaction("Electricity", 1000, new DateTime(2023,10,26), false));
+            Transaction.TransactionList.Add(new Transaction("Food", 2000, new DateTime(2023,10,26), false));
+
             Display.StartAnimation();
             while (true)  // Main loop
             {
-                string input = Display.MainMenu();
+                Program.Print($"\n      Main Menu".PadLeft(10), CC.DarkYellow);
+                Program.Print("\n----------------------------------------------------------------------------\n", CC.DarkBlue);
+                Program.Print($" 1. Add new transaction\n" +
+                                " 2. View transactions\n" +
+                                " 3. Save and Exit\n", CC.Cyan);
+                Program.Print("----------------------------------------------------------------------------\n", CC.DarkBlue);
+                Program.Print(" Select an option: ", CC.Green);
+                string input = Display.GetKey();
                 if (Regex.IsMatch(input, "^(1|a)$"))   // Add transaction loop
                 {
-                    while (true)
-                    {
-                        input = Display.ChooseTransaction(); // Add Income
-                        if (Regex.IsMatch(input, "^(1|i)$"))
-                        {
-                            transactionList.Add(Transaction.AddTransaction(Regex.IsMatch(input, "^(1|i)$")));  //create boolean, then object
-                        }
-                        else if (Regex.IsMatch(input, "^(3|q|x)$"))  // Return
-                        {
-                            Console.Clear();
-                            break;
-                        }
-                        else
-                        {
-                            Console.Clear();
-                            Program.Print($"\n\n{input} is not a valid option\n\n");
-                        }
-                    }
+                    Transaction.AddTransaction();
                 }
-                else if (Regex.IsMatch(input, "^(2|v|d)$"))  // View transactions
+                else if (Regex.IsMatch(input, "^(2|v)$"))   // View
                 {
-                    Transaction.ViewTransactions(transactionList);
-                    input = Display.EditOptions();
+                    Transaction.ViewTransactions();
                 }
-                else if (Regex.IsMatch(input, "^(3|q|x)$"))
+                else if (Regex.IsMatch(input, "^(3|x)$"))
                 {
-                    Print("\n\n Saving and Exiting application...\n\n", CC.Red);
+                    Program.Print("\n\n     Exiting application!\n\n", CC.Red);
                     break;
                 }
             }
