@@ -34,18 +34,18 @@ namespace MoneyManager
         }
         private static string GetValidTitle()
         {
-            Display.Print("\n 1. Title? ", CC.Cyan); // add error handling for null
+            Display.Print("\n Enter Title: ", CC.Cyan); // add error handling for null
             string title = Display.GetLine();
             while (title == null)
             {
-                Display.Print($"\n\n 8{title} is not a valid title.\n You must type something\n\n", CC.Red);
+                Display.Print($"\n\n {title} is not a valid title.\n You must type something\n\n", CC.Red);
                 title = Display.GetLine();
             }
             return title;
         }
         private static decimal GetValidAmount()
         {
-            Display.Print("\n 2. Amount? ", CC.Cyan);
+            Display.Print("\n Enter Amount: ", CC.Cyan);
             string input = Display.GetLine();
             decimal amount;
             while (!(decimal.TryParse(input, out amount) && amount > 0))
@@ -57,7 +57,7 @@ namespace MoneyManager
         }
         private static DateTime GetValidDate()
         {
-            Display.Print("\n 3. Date? ", CC.Cyan);
+            Display.Print("\n Enter Date: ", CC.Cyan);
             string input = Display.GetLine();
             DateTime date;
             while (!(DateTime.TryParse(input, out date)))
@@ -150,9 +150,11 @@ namespace MoneyManager
                         Display.Print($" {searchInput} is not in the list!", CC.Red);
                         break;
                     } 
-                    if (menuInput == "1") transaction.Title = GetValidTitle();
-                    if (menuInput == "2") transaction.Amount = GetValidAmount();
-                    if (menuInput == "3") transaction.Date = GetValidDate();
+                    else if (menuInput == "1") transaction.Title = GetValidTitle();
+                    else if (menuInput == "2") transaction.Amount = GetValidAmount();
+                    else if (menuInput == "3") transaction.Date = GetValidDate();
+                    else if (menuInput == "4") TransactionList.Remove(transaction);
+                    break;
                 }
                 else Display.Print($" {menuInput} is not a valid option", CC.Red);
             }

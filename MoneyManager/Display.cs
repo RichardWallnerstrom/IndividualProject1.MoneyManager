@@ -36,7 +36,8 @@ namespace MoneyManager
             Print("\n----------------------------------------------------------------------------\n", CC.DarkBlue);
             Print( $" 1. Add new transaction\n" +
                             " 2. View transactions\n" +
-                            " 3. Save and Exit\n", CC.Cyan);
+                            " 3. Edit transactions\n" +
+                            " 4. Save and Exit\n", CC.Cyan);
             Print("----------------------------------------------------------------------------\n", CC.DarkBlue);
             Print(" Select an option: ", CC.Green);
         }
