@@ -13,7 +13,7 @@ namespace MoneyManager
             Transaction.TransactionList.Add(new Transaction("Tip", 1600, 11, true));
             Transaction.TransactionList.Add(new Transaction("Rent", 8000, 6, false));
             Transaction.TransactionList.Add(new Transaction("Electricity", 1000, 4, false));
-            Transaction.TransactionList.Add(new Transaction("Food", 2000, 13, false));
+            Transaction.TransactionList.Add(new Transaction("Food", 2000, 0, false));
 
             //Display.StartAnimation();
             while (true)  // Main loop
@@ -22,15 +22,18 @@ namespace MoneyManager
                 string input = Display.GetKey();
                 if (Regex.IsMatch(input, "^(1|a)$"))   // Add 
                 {
+                    Console.Clear();
                     Transaction.AddTransaction();
                 }
                 else if (Regex.IsMatch(input, "^(2|v)$"))   // View
                 {
+                    Console.Clear();
                     Transaction.ViewTransactions();
                     Transaction.ViewOptions();
                 }
                 else if (Regex.IsMatch(input, "^(3|e)$"))   // Edit
                 {
+                    Console.Clear();
                     Transaction.ViewTransactions();
                     Transaction.EditTransaction();
                 }

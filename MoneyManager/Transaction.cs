@@ -19,7 +19,6 @@ namespace MoneyManager
             Date = date;
             IsIncome = isIncome;
         }
-
         public string Title { get; set; }
         public decimal Amount { get; set; }
         public int Date { get; set; }
@@ -71,8 +70,11 @@ namespace MoneyManager
                     }
                 }
             }
+            decimal totalBalance = incomeTotal - expensesTotal;
+            ConsoleColor color = totalBalance >= 0 ? ConsoleColor.Green : ConsoleColor.Red;
             Display.Print("\n ----------------------------------------------------------------------------", CC.DarkBlue);
-            Display.Print($"\n Total Balance is: {incomeTotal - expensesTotal}");
+            Display.Print($"\n Total Balance is:");
+            Display.Print($" {totalBalance:C}", color);
             Display.Print("\n ----------------------------------------------------------------------------\n", CC.DarkBlue);
         }
         public static void ViewOptions()
@@ -89,6 +91,7 @@ namespace MoneyManager
                 Display.Print(" ----------------------------------------------------------------------------\n", CC.DarkBlue);
                 Display.Print(" Select an option: ", CC.Green);
                 menuInput = Display.GetKey();
+                Console.Clear();
                 if (menuInput == "4") break;
                 if (menuInput == "1") ViewTransactions("1");
                 else if (menuInput == "2") ViewTransactions("2");
@@ -109,24 +112,27 @@ namespace MoneyManager
             string input = Console.ReadLine();
             if (input == null) 
             {
-                Display.Print("\n\nNo input detected. \n\n", CC.Red);
+                Display.Print("\n\n     No input detected. \n\n", CC.Red);
                 ViewTransactions();
                 return;
             }
-            Display.Print("\n\n Type: \"R\" to sort reversed.\n Type anything else to continue:  ", CC.Cyan);  // Sorting section
-            bool wantsReversed = (Display.GetKey().ToString().ToLower() == "r"); 
+            Display.Print("\n\n Type: \"R\" to sort reversed.\n Type anything else to continue:  ", CC.Cyan);  // Reversing section
+            bool wantsReversed = (Display.GetKey().ToLower() == "r"); 
             if (input.ToLower() == "title")
                 TransactionList = (wantsReversed) ? TransactionList.OrderBy(t => t.Title).Reverse().ToList() : TransactionList.OrderBy(t => t.Title).ToList();
             else if (input.ToLower() == "amount")
                 TransactionList = (wantsReversed) ? TransactionList.OrderBy(t => t.Amount).Reverse().ToList() : TransactionList.OrderBy(t => t.Amount).ToList();
             else if (input.ToLower() == "date")
                 TransactionList = (wantsReversed) ? TransactionList.OrderBy(t => t.Date).Reverse().ToList() : TransactionList.OrderBy(t => t.Date).ToList();
+            else if (input.ToLower() == "type")
+                TransactionList = (wantsReversed) ? TransactionList.OrderBy(t => t.IsIncome).ToList() : TransactionList.OrderBy(t => t.IsIncome).Reverse().ToList();
             else
             {
                 Console.Clear();
                 Display.Print($"\n\n       {input} is not a valid attribute\n\n", CC.Red);
                 return;
             }
+            Console.Clear();
             Display.Print($"\n\n Sorting by {input}\n", CC.Green);
             ViewTransactions();
         }
@@ -168,7 +174,6 @@ namespace MoneyManager
                     Console.Clear();
                     Display.Print($"\n\n        {menuInput} is not a valid option\n\n", CC.Red);
                 }
-
             }
         }
         public static void AddTransaction()
@@ -180,7 +185,6 @@ namespace MoneyManager
             Transaction newTransaction = new Transaction(objectFields.Item1, objectFields.Item2, objectFields.Item3, isIncome);
             TransactionList.Add(newTransaction);
         }
-
         private static string GetTransactionType()
         {
             while (true)
@@ -194,6 +198,7 @@ namespace MoneyManager
                 Display.Print(" ----------------------------------------------------------------------------\n", CC.DarkBlue);
                 Display.Print(" Select an option: ", CC.Green);
                 string input = Display.GetKey();
+                Console.Clear();
                 if (Regex.IsMatch(input, "^(1|2)$"))
                     return input == "1" ? "1" : "2";
                 else if (input == "3")
@@ -241,12 +246,12 @@ namespace MoneyManager
         {
             Display.Print("\n Enter month: ", CC.Cyan);
             string input = Display.GetLine();
-            while (ParseMonthToInt(input) <= 0 || ParseMonthToInt(input) >= 14 || ParseMonthToInt(input) == null)
+            while (ParseMonthToInt(input) < 0 || ParseMonthToInt(input) > 12 || ParseMonthToInt(input) == null)
             {
                 Console.Clear();
                 Display.Print( $"\n\n        {input} is not a valid month.\n\n " +
                                 "       Try name of month or number.\n " +
-                                "       Write 13 or Monthly for recurring transactions \n\n", CC.Red);
+                                "       Write \"0\" or Monthly for recurring transactions \n\n", CC.Red);
                 Display.Print("\n Enter month: ", CC.Cyan);
                 input = Display.GetLine();
             }
@@ -256,7 +261,7 @@ namespace MoneyManager
         {
             DateTime parsedDate;
             int month;
-            if (input == "13" || input.ToLower() == "monthly") return 13; //Monthly
+            if (input == "0" || input.ToLower() == "monthly") return 0; //Monthly
             if (Int32.TryParse(input, out month)) return month;
             if (DateTime.TryParseExact(input, "MMMM", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out parsedDate))
             {
@@ -270,12 +275,10 @@ namespace MoneyManager
         }
         private static string IntToMonth(int monthNumber) 
         {          
-            if (monthNumber == 13) return "Monthly";
+            if (monthNumber == 0) return "Monthly";
             DateTime date = new DateTime(DateTime.Now.Year, monthNumber, 1);
             string monthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(date.Month);
             return monthName;
-        }
-
-        
+        }  
     }
 }
