@@ -12,6 +12,13 @@ namespace MoneyManager
 {
     public static class Display  // I will need many different Option classes derived from this class
     {
+        public static void Print(string text, CC fgColor = CC.White, CC bgColor = CC.Black)
+        {
+            Console.ForegroundColor = fgColor;
+            Console.BackgroundColor = bgColor;
+            Console.Write(text);
+            Console.ResetColor();
+        }
         public static string GetKey()
         {
             ConsoleKeyInfo keyInfo = Console.ReadKey(true); //Hide the key from the console
@@ -22,6 +29,16 @@ namespace MoneyManager
         {
             string userInput = Console.ReadLine();
             return (userInput.ToString() != null) ? userInput.ToString() : string.Empty;
+        }
+        public static void StartMenu()
+        {
+            Print($"\n      Main Menu".PadLeft(10), CC.DarkYellow);
+            Print("\n----------------------------------------------------------------------------\n", CC.DarkBlue);
+            Print( $" 1. Add new transaction\n" +
+                            " 2. View transactions\n" +
+                            " 3. Save and Exit\n", CC.Cyan);
+            Print("----------------------------------------------------------------------------\n", CC.DarkBlue);
+            Print(" Select an option: ", CC.Green);
         }
         
         public static void StartAnimation()

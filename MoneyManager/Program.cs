@@ -1,18 +1,12 @@
 ﻿using System;
 using System.Text.RegularExpressions;
+using MoneyManager;
 using CC = System.ConsoleColor;
 
 namespace MoneyManager
 {
     internal class Program
     {
-        public static void Print(string text, CC fgColor = CC.White, CC bgColor = CC.Black)
-        {
-            Console.ForegroundColor = fgColor;
-            Console.BackgroundColor = bgColor;
-            Console.Write(text);
-            Console.ResetColor();
-        }
         static void Main()
         {
             Transaction.TransactionList.Add(new Transaction("Salary", 16000, new DateTime(2023,10,26), true));
@@ -21,28 +15,23 @@ namespace MoneyManager
             Transaction.TransactionList.Add(new Transaction("Electricity", 1000, new DateTime(2023,10,26), false));
             Transaction.TransactionList.Add(new Transaction("Food", 2000, new DateTime(2023,10,26), false));
 
-            Display.StartAnimation();
+            //Display.StartAnimation();
             while (true)  // Main loop
             {
-                Program.Print($"\n      Main Menu".PadLeft(10), CC.DarkYellow);
-                Program.Print("\n----------------------------------------------------------------------------\n", CC.DarkBlue);
-                Program.Print($" 1. Add new transaction\n" +
-                                " 2. View transactions\n" +
-                                " 3. Save and Exit\n", CC.Cyan);
-                Program.Print("----------------------------------------------------------------------------\n", CC.DarkBlue);
-                Program.Print(" Select an option: ", CC.Green);
+                Display.StartMenu();
                 string input = Display.GetKey();
-                if (Regex.IsMatch(input, "^(1|a)$"))   // Add transaction loop
+                if (Regex.IsMatch(input, "^(1|a)$"))   // Add 
                 {
                     Transaction.AddTransaction();
                 }
                 else if (Regex.IsMatch(input, "^(2|v)$"))   // View
                 {
                     Transaction.ViewTransactions();
+                    Transaction.EditTransaction();
                 }
-                else if (Regex.IsMatch(input, "^(3|x)$"))
+                else if (Regex.IsMatch(input, "^(3|x)$"))   // Quit
                 {
-                    Program.Print("\n\n     Exiting application!\n\n", CC.Red);
+                    Display.Print("\n\n     Exiting application!\n\n", CC.Red);
                     break;
                 }
             }
