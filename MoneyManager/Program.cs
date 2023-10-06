@@ -27,6 +27,7 @@ namespace MoneyManager
                 else if (Regex.IsMatch(input, "^(2|v)$"))   // View
                 {
                     Transaction.ViewTransactions();
+                    Transaction.ViewOptions();
                 }
                 else if (Regex.IsMatch(input, "^(3|e)$"))   // Edit
                 {

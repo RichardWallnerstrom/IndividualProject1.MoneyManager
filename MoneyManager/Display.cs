@@ -10,7 +10,7 @@ using CC = System.ConsoleColor;
 
 namespace MoneyManager
 {
-    public static class Display  // I will need many different Option classes derived from this class
+    public static class Display  
     {
         public static void Print(string text, CC fgColor = CC.White, CC bgColor = CC.Black)
         {
@@ -21,7 +21,7 @@ namespace MoneyManager
         }
         public static string GetKey()
         {
-            ConsoleKeyInfo keyInfo = Console.ReadKey(true); //Hide the key from the console
+            ConsoleKeyInfo keyInfo = Console.ReadKey(true); 
             char userInput = char.ToLower(keyInfo.KeyChar);
             return (userInput.ToString() != null) ? userInput.ToString() : string.Empty;
         }
