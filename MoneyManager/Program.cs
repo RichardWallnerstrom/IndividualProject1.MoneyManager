@@ -9,11 +9,11 @@ namespace MoneyManager
     {
         static void Main()
         {
-            Transaction.TransactionList.Add(new Transaction("Salary", 16000, new DateTime(2023,10,26), true));
-            Transaction.TransactionList.Add(new Transaction("Tip", 1600, new DateTime(2023,10,26), true));
-            Transaction.TransactionList.Add(new Transaction("Rent", 8000, new DateTime(2023,10,26), false));
-            Transaction.TransactionList.Add(new Transaction("Electricity", 1000, new DateTime(2023,10,26), false));
-            Transaction.TransactionList.Add(new Transaction("Food", 2000, new DateTime(2023,10,26), false));
+            Transaction.TransactionList.Add(new Transaction("Salary", 16000, 10, true));
+            Transaction.TransactionList.Add(new Transaction("Tip", 1600, 11, true));
+            Transaction.TransactionList.Add(new Transaction("Rent", 8000, 6, false));
+            Transaction.TransactionList.Add(new Transaction("Electricity", 1000, 4, false));
+            Transaction.TransactionList.Add(new Transaction("Food", 2000, 13, false));
 
             //Display.StartAnimation();
             while (true)  // Main loop

@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 using CC = System.ConsoleColor;
 using MoneyManager;
 using System.Text.RegularExpressions;
+using System.Globalization;
 
 namespace MoneyManager
 {
     public class Transaction
     {
-        public Transaction(string title, decimal amount, DateTime date, bool isIncome)
+        public Transaction(string title, decimal amount, int date, bool isIncome)
         {
             Title = title;
             Amount = amount;
@@ -21,24 +22,26 @@ namespace MoneyManager
 
         public string Title { get; set; }
         public decimal Amount { get; set; }
-        public DateTime Date { get; set; }
+        public int Date { get; set; }
         public bool IsIncome { get; set; }
         public static List<Transaction> TransactionList { get; } = new List<Transaction>();
-        private static (string, decimal, DateTime) GetTransactionData()
+        private static (string, decimal, int) GetTransactionData()  // Get all info for object creation
         {
             string title = GetValidTitle();
             decimal amount = GetValidAmount();
-            DateTime date = GetValidDate();
+            int date = GetValidMonth();
             Console.Clear();
             return (title, amount, date);
         }
         private static string GetValidTitle()
         {
-            Display.Print("\n Enter Title: ", CC.Cyan); // add error handling for null
+            Display.Print("\n Enter Title: ", CC.Cyan);
             string title = Display.GetLine();
             while (title == null)
             {
+                Console.Clear();
                 Display.Print($"\n\n {title} is not a valid title.\n You must type something\n\n", CC.Red);
+                Display.Print("\n Enter Title: ", CC.Cyan);
                 title = Display.GetLine();
             }
             return title;
@@ -50,22 +53,52 @@ namespace MoneyManager
             decimal amount;
             while (!(decimal.TryParse(input, out amount) && amount > 0))
             {
-                Display.Print($"\n\n 8{input} is not a valid number.\n Income should be above 0\n\n", CC.Red);
+                Console.Clear();
+                Display.Print($"\n\n {input} is not a valid number.\n Value must be above 0\n\n", CC.Red);
+                Display.Print("\n Enter Amount: ", CC.Cyan);
                 input = Display.GetLine();
             }
             return amount;
         }
-        private static DateTime GetValidDate()
+        private static int GetValidMonth()
         {
-            Display.Print("\n Enter Date: ", CC.Cyan);
+            Display.Print("\n Enter month: ", CC.Cyan);
             string input = Display.GetLine();
-            DateTime date;
-            while (!(DateTime.TryParse(input, out date)))
+            while (ParseMonthToInt(input) <= 0 || ParseMonthToInt(input) >= 14 || ParseMonthToInt(input) == null)
             {
-                Display.Print($"\n\n {input} is not a valid date.\n Try YEAR-MONTH-DAY \n\n", CC.Red);
+                Console.Clear();
+                Display.Print($"\n\n {input} is not a valid month.\n Try name of month or number.\n Write 13 or Monthly for recurring transaction \n\n", CC.Red);
+                Display.Print("\n Enter month: ", CC.Cyan);
                 input = Display.GetLine();
             }
-            return date.Date;
+            return ParseMonthToInt(input);
+        }
+        private static int ParseMonthToInt(string input)  //Accept either month number or month name ex "10" or "october"
+        {
+            DateTime parsedDate;
+            int month;
+            if (input == "13" || input.ToLower() == "monthly") return Int32.Parse("13"); //Monthly
+            if (Int32.TryParse(input, out month)) return month;
+            if (DateTime.TryParseExact(input, "MMMM", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out parsedDate))
+            {
+                return month = parsedDate.Month;
+            }
+            else
+            {
+                Display.Print($" Failed to parse {input}");
+                return month = 0; 
+            }
+        }
+        private static string IntToMonth(int monthNumber) 
+        {
+            if (monthNumber == 0) return "0";
+            
+            if (monthNumber == 13) return "Monthly";
+            DateTime date = new DateTime(DateTime.Now.Year, monthNumber, 1);
+            string monthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(date.Month);
+            return monthName;
+            
+
         }
         public static void AddTransaction()
         {
@@ -107,7 +140,7 @@ namespace MoneyManager
             {
                 
                 Display.Print($"\n {item.Title.PadRight(20)} {item.Amount:C}".PadRight(20) + 
-                    $" {item.Date.ToShortDateString()}".PadRight(20), CC.Cyan);
+                    $" {IntToMonth(item.Date)}".PadRight(20), CC.Cyan);
                 if (item.IsIncome)
                 {
                     Display.Print("Income", CC.Green);
@@ -152,7 +185,7 @@ namespace MoneyManager
                     } 
                     else if (menuInput == "1") transaction.Title = GetValidTitle();
                     else if (menuInput == "2") transaction.Amount = GetValidAmount();
-                    else if (menuInput == "3") transaction.Date = GetValidDate();
+                    else if (menuInput == "3") transaction.Date = GetValidMonth();
                     else if (menuInput == "4") TransactionList.Remove(transaction);
                     break;
                 }
