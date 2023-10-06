@@ -7,6 +7,7 @@ using CC = System.ConsoleColor;
 using MoneyManager;
 using System.Text.RegularExpressions;
 using System.Globalization;
+using System.Drawing;
 
 namespace MoneyManager
 {
@@ -24,53 +25,45 @@ namespace MoneyManager
         public int Date { get; set; }
         public bool IsIncome { get; set; }
         public static List<Transaction> TransactionList { get; set; } = new List<Transaction>();
+        public static decimal Inflation { get; set; }
+        public static decimal Interest { get; set; }
+        public static int YearsToProject { get; set; }
+
         public static void ViewTransactions(string transactionType = "3")
         {
             decimal incomeTotal = 0, expensesTotal = 0;
             Display.Print($"\n {"Title",-21} {"Amount",-18} {"Date",-19} {"Type",-18}", CC.DarkYellow); 
             Display.Print("\n ----------------------------------------------------------------------------\n", CC.DarkBlue);
-
             foreach (Transaction item in TransactionList)
             {
+                string incomeOrExpense = item.IsIncome ? "Income" : "Expense";
+                ConsoleColor color = item.IsIncome ? ConsoleColor.Green : ConsoleColor.Red;
                 if (transactionType == "3") // All transactions
                 {
-                    if (item.IsIncome)
-                    {
-                        Display.Print($"\n {item.Title,-20}{item.Amount,-20:C}{IntToMonth(item.Date),-20}", CC.Cyan);
-                        Display.Print("Income", CC.Green);
-                        incomeTotal += item.Amount;
-                    }
-                    else
-                    {
-                        Display.Print($"\n {item.Title,-20}{item.Amount,-20:C}{IntToMonth(item.Date),-20}", CC.Cyan);
-                        Display.Print("Expense", CC.Red);
-                        expensesTotal += item.Amount;
-                    }
+                    Display.Print($"\n {item.Title,-20}{item.Amount,-20:C}{IntToMonth(item.Date),-20}", CC.Cyan);
+                    Display.Print(incomeOrExpense, color);
+                    if (item.IsIncome) incomeTotal += item.Amount;
+                    else expensesTotal += item.Amount;
+                    
                 }
-                else if (transactionType == "1")  // Income only
+                else if (item.IsIncome && transactionType == "1")
                 {
-                    if (item.IsIncome)
-                    {
-                        Display.Print($"\n {item.Title,-20}{item.Amount,-20:C}{IntToMonth(item.Date),-20}", CC.Cyan);
-                        Display.Print("Income", CC.Green);
-                        incomeTotal += item.Amount;
-                    }
+                    Display.Print($"\n {item.Title,-20}{item.Amount,-20:C}{IntToMonth(item.Date),-20}", CC.Cyan);
+                    Display.Print(incomeOrExpense, color);
+                    incomeTotal += item.Amount;
                 }
-                else if (transactionType == "2")  // Expenses only
+                else if (!item.IsIncome && transactionType == "2")
                 {
-                    if (!item.IsIncome)
-                    {
-                        Display.Print($"\n {item.Title,-20}{item.Amount,-20:C}{IntToMonth(item.Date),-20}", CC.Cyan);
-                        Display.Print("Expense", CC.Red);
-                        expensesTotal += item.Amount;
-                    }
+                    Display.Print($"\n {item.Title,-20}{item.Amount,-20:C}{IntToMonth(item.Date),-20}", CC.Cyan);
+                    Display.Print(incomeOrExpense, color);
+                    expensesTotal += item.Amount;
                 }
             }
             decimal totalBalance = incomeTotal - expensesTotal;
-            ConsoleColor color = totalBalance >= 0 ? ConsoleColor.Green : ConsoleColor.Red;
+            ConsoleColor balanceColor = totalBalance > 0 ? ConsoleColor.Green : ConsoleColor.Red;
             Display.Print("\n ----------------------------------------------------------------------------", CC.DarkBlue);
             Display.Print($"\n Total Balance is:");
-            Display.Print($" {totalBalance:C}", color);
+            Display.Print($" {totalBalance:C}", balanceColor);
             Display.Print("\n ----------------------------------------------------------------------------\n", CC.DarkBlue);
         }
         public static void ViewOptions()
@@ -244,11 +237,11 @@ namespace MoneyManager
         {
             Display.Print("\n Enter month: ", CC.Cyan);
             string input = Display.GetLine();
-            while (ParseMonthToInt(input) < 0 || ParseMonthToInt(input) > 12 || ParseMonthToInt(input) == null)
+            while (ParseMonthToInt(input) < 0 || ParseMonthToInt(input) > 13 || ParseMonthToInt(input) == null)
             {
                 Console.Clear();
                 Display.Print( $"\n\n        {input} is not a valid month.\n\n " +
-                                "       Try name of month or number.\n " +
+                                "       Type name of month or its number.\n " +
                                 "       Write \"0\" or Monthly for recurring transactions \n\n", CC.Red);
                 Display.Print("\n Enter month: ", CC.Cyan);
                 input = Display.GetLine();
@@ -260,6 +253,7 @@ namespace MoneyManager
             DateTime parsedDate;
             int month;
             if (input == "0" || input.ToLower() == "monthly") return 0; //Monthly
+            if (input == "13" || input.ToLower() == "yearly") return 0; //Yearly
             if (Int32.TryParse(input, out month)) return month;
             if (DateTime.TryParseExact(input, "MMMM", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out parsedDate))
             {
@@ -274,6 +268,7 @@ namespace MoneyManager
         private static string IntToMonth(int monthNumber) 
         {          
             if (monthNumber == 0) return "Monthly";
+            if (monthNumber == 13) return "Yearly";
             DateTime date = new DateTime(DateTime.Now.Year, monthNumber, 1);
             string monthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(date.Month);
             return monthName;
