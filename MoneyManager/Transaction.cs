@@ -28,7 +28,6 @@ namespace MoneyManager
         public static void ViewTransactions(string transactionType = "3")
         {
             decimal incomeTotal = 0, expensesTotal = 0;
-            Console.Clear();
             Display.Print("\n Title".PadRight(20) + "Amount".PadRight(20) + "Date".PadRight(20) + "Type".PadRight(20), CC.DarkYellow);
             Display.Print("\n ----------------------------------------------------------------------------\n", CC.DarkBlue);
 
@@ -71,7 +70,6 @@ namespace MoneyManager
                         expensesTotal += item.Amount;
                     }
                 }
-
             }
             Display.Print("\n ----------------------------------------------------------------------------", CC.DarkBlue);
             Display.Print($"\n Total Balance is: {incomeTotal - expensesTotal}");
@@ -95,27 +93,41 @@ namespace MoneyManager
                 if (menuInput == "1") ViewTransactions("1");
                 else if (menuInput == "2") ViewTransactions("2");
                 else if (menuInput == "3") SortTransactions();
-                
                 else
                 {
                     Console.Clear();
                     Display.Print($"\n\n        {menuInput} is not a valid option\n\n", CC.Red);
+                    ViewTransactions();
                 }
             }
         }
         private static void SortTransactions()
         {
             Console.Clear();
-            Display.Print("Which attribute would you like to sort by: ", CC.Cyan);
-            string input = Display.GetLine();
-            if (input.ToLower() == "title") 
-                TransactionList = TransactionList.OrderBy(t => t.Title).ToList();
-            else if (input.ToLower() == "amount") 
-                TransactionList = TransactionList.OrderBy(t => t.Amount).ToList();
-            else if (input.ToLower() == "date") 
-                TransactionList = TransactionList.OrderBy(t => t.Date).ToList();
-            else 
+            ViewTransactions();
+            Display.Print("\n\n Sort list by: ", CC.Cyan);  // Sorting section
+            string input = Console.ReadLine();
+            if (input == null) 
+            {
+                Display.Print("\n\nNo input detected. \n\n", CC.Red);
+                ViewTransactions();
+                return;
+            }
+            Display.Print("\n\n Type: \"R\" to sort reversed.\n Type anything else to continue:  ", CC.Cyan);  // Sorting section
+            bool wantsReversed = (Display.GetKey().ToString().ToLower() == "r"); 
+            if (input.ToLower() == "title")
+                TransactionList = (wantsReversed) ? TransactionList.OrderBy(t => t.Title).Reverse().ToList() : TransactionList.OrderBy(t => t.Title).ToList();
+            else if (input.ToLower() == "amount")
+                TransactionList = (wantsReversed) ? TransactionList.OrderBy(t => t.Amount).Reverse().ToList() : TransactionList.OrderBy(t => t.Amount).ToList();
+            else if (input.ToLower() == "date")
+                TransactionList = (wantsReversed) ? TransactionList.OrderBy(t => t.Date).Reverse().ToList() : TransactionList.OrderBy(t => t.Date).ToList();
+            else
+            {
+                Console.Clear();
                 Display.Print($"\n\n       {input} is not a valid attribute\n\n", CC.Red);
+                return;
+            }
+            Display.Print($"\n\n Sorting by {input}\n", CC.Green);
             ViewTransactions();
         }
         public static void EditTransaction()

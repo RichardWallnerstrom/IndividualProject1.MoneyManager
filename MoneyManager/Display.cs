@@ -28,7 +28,7 @@ namespace MoneyManager
         public static string GetLine()
         {
             string userInput = Console.ReadLine();
-            return (userInput.ToString() != null) ? userInput.ToString() : string.Empty;
+            return (userInput != null) ? userInput : string.Empty;
         }
         public static void StartMenu()
         {
