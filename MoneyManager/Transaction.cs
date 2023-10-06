@@ -27,22 +27,22 @@ namespace MoneyManager
         public static void ViewTransactions(string transactionType = "3")
         {
             decimal incomeTotal = 0, expensesTotal = 0;
-            Display.Print("\n Title".PadRight(20) + "Amount".PadRight(20) + "Date".PadRight(20) + "Type".PadRight(20), CC.DarkYellow);
+            Display.Print($"\n {"Title",-21} {"Amount",-18} {"Date",-19} {"Type",-18}", CC.DarkYellow); 
             Display.Print("\n ----------------------------------------------------------------------------\n", CC.DarkBlue);
 
             foreach (Transaction item in TransactionList)
             {
                 if (transactionType == "3") // All transactions
                 {
-                    Display.Print($"\n {item.Title.PadRight(20)} {item.Amount:C}".PadRight(20) +
-                    $" {IntToMonth(item.Date)}".PadRight(20), CC.Cyan);
                     if (item.IsIncome)
                     {
+                        Display.Print($"\n {item.Title,-20}{item.Amount,-20:C}{IntToMonth(item.Date),-20}", CC.Cyan);
                         Display.Print("Income", CC.Green);
                         incomeTotal += item.Amount;
                     }
                     else
                     {
+                        Display.Print($"\n {item.Title,-20}{item.Amount,-20:C}{IntToMonth(item.Date),-20}", CC.Cyan);
                         Display.Print("Expense", CC.Red);
                         expensesTotal += item.Amount;
                     }
@@ -51,9 +51,7 @@ namespace MoneyManager
                 {
                     if (item.IsIncome)
                     {
-                        Display.Print($"\n {item.Title.PadRight(20)} {item.Amount:C}".PadRight(20) +
-                                        $" {IntToMonth(item.Date)}".PadRight(20), CC.Cyan);
-
+                        Display.Print($"\n {item.Title,-20}{item.Amount,-20:C}{IntToMonth(item.Date),-20}", CC.Cyan);
                         Display.Print("Income", CC.Green);
                         incomeTotal += item.Amount;
                     }
@@ -62,9 +60,7 @@ namespace MoneyManager
                 {
                     if (!item.IsIncome)
                     {
-                        Display.Print($"\n {item.Title.PadRight(20)} {item.Amount:C}".PadRight(20) +
-                                        $" {IntToMonth(item.Date)}".PadRight(20), CC.Cyan);
-
+                        Display.Print($"\n {item.Title,-20}{item.Amount,-20:C}{IntToMonth(item.Date),-20}", CC.Cyan);
                         Display.Print("Expense", CC.Red);
                         expensesTotal += item.Amount;
                     }
@@ -133,7 +129,8 @@ namespace MoneyManager
                 return;
             }
             Console.Clear();
-            Display.Print($"\n\n Sorting by {input}\n", CC.Green);
+            if (!wantsReversed) Display.Print($"\n\n Sorting ascending by {input} \n", CC.Green);
+            else Display.Print($"\n\n Sorting descending by {input}\n", CC.Green);
             ViewTransactions();
         }
         public static void EditTransaction()
@@ -218,13 +215,14 @@ namespace MoneyManager
         private static string GetValidTitle()
         {
             Display.Print("\n Enter Title: ", CC.Cyan);
-            string title = Display.GetLine();
-            while (title == null)
+            string title = Display.GetLine().Trim();
+            while (title == null || title.Length > 13)
             {
                 Console.Clear();
-                Display.Print($"\n\n        {title} is not a valid title.\n You must type something\n\n", CC.Red);
+                Display.Print($"\n\n        Title must be between 3 and 13 letters. \n\n", CC.Red);
                 Display.Print("\n Enter Title: ", CC.Cyan);
                 title = Display.GetLine();
+                
             }
             return title;
         }
@@ -233,10 +231,10 @@ namespace MoneyManager
             Display.Print("\n Enter Amount: ", CC.Cyan);
             string input = Display.GetLine();
             decimal amount;
-            while (!(decimal.TryParse(input, out amount) && amount > 0))
+            while (!(decimal.TryParse(input, out amount) && amount > 0 && amount <= 99999999))
             {
                 Console.Clear();
-                Display.Print($"\n\n        {input} is not a valid number.\n Value must be above 0\n\n", CC.Red);
+                Display.Print($"\n\n        {input} is not a valid number.\n Value must be between 1 - 99 999 999\n\n", CC.Red);
                 Display.Print("\n Enter Amount: ", CC.Cyan);
                 input = Display.GetLine();
             }

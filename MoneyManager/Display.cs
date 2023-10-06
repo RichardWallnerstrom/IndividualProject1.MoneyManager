@@ -65,5 +65,6 @@ namespace MoneyManager
                 Thread.Sleep(10);
             }
         }
-    }      
+
+    }
 }
