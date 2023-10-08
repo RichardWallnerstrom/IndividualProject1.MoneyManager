@@ -31,7 +31,7 @@ namespace MoneyManager
 
         public static void ViewTransactions(string transactionType = "3")
         {
-            decimal incomeTotal = 0, expensesTotal = 0;
+            decimal incomeTotal = 0, expensesTotal = 0, startMoney = 0;
             Display.Print($"\n {"Title",-21} {"Amount",-18} {"Date",-19} {"Type",-18}", CC.DarkYellow); 
             Display.Print("\n ----------------------------------------------------------------------------\n", CC.DarkBlue);
             foreach (Transaction item in TransactionList)
@@ -42,29 +42,55 @@ namespace MoneyManager
                 {
                     Display.Print($"\n {item.Title,-20}{item.Amount,-20:C}{IntToMonth(item.Date),-20}", CC.Cyan);
                     Display.Print(incomeOrExpense, color);
-                    if (item.IsIncome) incomeTotal += item.Amount;
-                    else expensesTotal += item.Amount;
-                    
+                    // Check if its monthly, yearly or single transaction and then calculate properly
+                    if (item.IsIncome)
+                    {
+                        if (item.Date == 13 || item.Date == 0) // Yearly or monthly
+                            incomeTotal += (item.Date == 13) ? item.Amount : item.Amount * 12;
+                        else 
+                            startMoney += item.Amount;
+                    }
+                    else
+                    {
+                        if (item.Date == 13 || item.Date == 0) // Yearly or monthly
+                            expensesTotal += (item.Date == 13) ? item.Amount : item.Amount * 12;
+                        else 
+                            startMoney -= item.Amount;
+                    }                     
                 }
                 else if (item.IsIncome && transactionType == "1")
                 {
                     Display.Print($"\n {item.Title,-20}{item.Amount,-20:C}{IntToMonth(item.Date),-20}", CC.Cyan);
                     Display.Print(incomeOrExpense, color);
-                    incomeTotal += item.Amount;
+                    incomeTotal += (item.Date == 13) ? item.Amount : item.Amount * 12;
                 }
                 else if (!item.IsIncome && transactionType == "2")
                 {
                     Display.Print($"\n {item.Title,-20}{item.Amount,-20:C}{IntToMonth(item.Date),-20}", CC.Cyan);
                     Display.Print(incomeOrExpense, color);
-                    expensesTotal += item.Amount;
+                    expensesTotal += (item.Date == 13) ? item.Amount : item.Amount * 12;
                 }
             }
-            decimal totalBalance = incomeTotal - expensesTotal;
+            Display.Print(startMoney.ToString());
+            string balanceString = (YearsToProject == 0) ? "\n Projected Balance for this year: " : $"\nProjected balance for {YearsToProject} years: ";
+            decimal yearlyIncrease = incomeTotal - expensesTotal; 
+            decimal totalBalance = CalculateProjection(startMoney, yearlyIncrease);
             ConsoleColor balanceColor = totalBalance > 0 ? ConsoleColor.Green : ConsoleColor.Red;
-            Display.Print("\n ----------------------------------------------------------------------------", CC.DarkBlue);
-            Display.Print($"\n Total Balance is:");
+            Display.Print("\n ----------------------------------------------------------------------------\n", CC.DarkBlue);
+            Display.Print(balanceString);
             Display.Print($" {totalBalance:C}", balanceColor);
             Display.Print("\n ----------------------------------------------------------------------------\n", CC.DarkBlue);
+        }
+        private static decimal CalculateProjection(decimal startMoney, decimal yearly)
+        {
+            decimal rate = 1 + Interest / 100;
+            decimal result = (startMoney + yearly) * rate; 
+            for (int i = 1; i < YearsToProject; i++)
+            {
+                result += yearly;
+                result *= rate;
+            }
+            return result;
         }
         public static void ViewOptions()
         {
@@ -162,6 +188,7 @@ namespace MoneyManager
                 else
                 {
                     Console.Clear();
+                    ViewTransactions();
                     Display.Print($"\n\n        {menuInput} is not a valid option\n\n", CC.Red);
                 }
             }
@@ -265,7 +292,7 @@ namespace MoneyManager
                 return month = 0; 
             }
         }
-        private static string IntToMonth(int monthNumber) 
+        public static string IntToMonth(int monthNumber) 
         {          
             if (monthNumber == 0) return "Monthly";
             if (monthNumber == 13) return "Yearly";

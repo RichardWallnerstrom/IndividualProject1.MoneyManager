@@ -35,12 +35,15 @@ namespace MoneyManager
             Print($"\n      Main Menu".PadLeft(10), CC.DarkYellow);
             Print("\n ----------------------------------------------------------------------------\n", CC.DarkBlue);
             Print( $" 1. Add new transaction\n" +
-                            " 2. View transactions\n" +
-                            " 3. Edit transactions\n" +
-                            " 4. Save and Exit\n", CC.Cyan);
+                    " 2. View transactions\n" +
+                    " 3. Edit transactions\n" +
+                    " 4. Edit settings\n" +
+                    " 5. Save and Exit\n", CC.Cyan);
             Print(" ----------------------------------------------------------------------------\n", CC.DarkBlue);
             Print(" Select an option: ", CC.Green);
-        }    
+        }
+        
+
         public static void StartAnimation()
         {
             string message = "  Welcome to the Money Manager ";
