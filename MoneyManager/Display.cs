@@ -30,18 +30,6 @@ namespace MoneyManager
             string userInput = Console.ReadLine();
             return (userInput != null) ? userInput : string.Empty;
         }
-        public static void StartMenu()
-        {
-            Print($"\n      Main Menu".PadLeft(10), CC.DarkYellow);
-            Print("\n ----------------------------------------------------------------------------\n", CC.DarkBlue);
-            Print( $" 1. Add new transaction\n" +
-                    " 2. View transactions\n" +
-                    " 3. Edit transactions\n" +
-                    " 4. Edit settings\n" +
-                    " 5. Save and Exit\n", CC.Cyan);
-            Print(" ----------------------------------------------------------------------------\n", CC.DarkBlue);
-            Print(" Select an option: ", CC.Green);
-        }
         
 
         public static void StartAnimation()
