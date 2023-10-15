@@ -25,7 +25,7 @@ namespace MoneyManager
         public int Date { get; set; }
         public bool IsIncome { get; set; }
         public static List<Transaction> TransactionList { get; set; } = new List<Transaction>();
-        public static decimal Inflation { get; set; }
+        public static int Compound { get; set; }
         public static decimal Interest { get; set; }
         public static int YearsToProject { get; set; }
 
@@ -78,23 +78,24 @@ namespace MoneyManager
                         startMoney -= item.Amount;
                 }
             }
-            string balanceString = (YearsToProject == 0) ? "\n Projected balance for this year: " : $"\n Projected balance for {YearsToProject} years: ";
+            string balanceString = (YearsToProject == 0) ? "\n Total balance for this year: " : $"\n Total projection after {YearsToProject} years: ";
             decimal yearlyIncrease = incomeTotal - expensesTotal;
             decimal totalBalance = CalculateProjection(startMoney, yearlyIncrease);
+            ConsoleColor balanceColor = yearlyIncrease > 0 ? ConsoleColor.Green : ConsoleColor.Red; 
             //Yearly
             Display.Print("\n ----------------------------------------------------------------------------", CC.DarkBlue);
-            Display.Print($"\n Singles balance: ");
+            Display.Print($"\n Singles balance:  ");
             Display.Print($"{startMoney:C}", startMoney > 0 ? ConsoleColor.Green : ConsoleColor.Red);
             Display.Print("\n ----------------------------------------------------------------------------", CC.DarkBlue);
-            Display.Print($"\n Yearly income:   {incomeTotal:C}\n Yearly expenses: {expensesTotal:C}");
-            ConsoleColor balanceColor = yearlyIncrease > 0 ? ConsoleColor.Green : ConsoleColor.Red;
-            Display.Print($"\n Yearly balance:  {(yearlyIncrease):C}");
+            Display.Print($"\n Yearly income:    ", CC.Cyan); Display.Print($"{incomeTotal:C}", CC.Green);
+            Display.Print($"\n Yearly expenses:  ", CC.Cyan); Display.Print($"{expensesTotal:C}", CC.Red);
+            Display.Print($"\n Yearly balance:   ", CC.Cyan); Display.Print($"{yearlyIncrease:C}", balanceColor);
             Display.Print("\n ----------------------------------------------------------------------------", CC.DarkBlue);
             // Totals
             balanceColor = totalBalance > 0 ? ConsoleColor.Green : ConsoleColor.Red;
             if (YearsToProject > 0 && Interest > 0) 
             {
-                Display.Print($"\n Total interest gained in {YearsToProject} years: ");
+                Display.Print($"\n Total interest after {YearsToProject} years:    ");
                 Display.Print($"{totalBalance - ((yearlyIncrease * YearsToProject)):C}", CC.Green);
             }
             Display.Print(balanceString);
@@ -104,6 +105,7 @@ namespace MoneyManager
         private static decimal CalculateProjection(decimal startMoney, decimal yearly)
         {
             decimal rate = 1 + Interest / 100;
+            int compoundsPerYear = 12 / Compound;
             decimal result = startMoney + yearly; 
             for (int i = 1; i < YearsToProject; i++)
             {
@@ -119,9 +121,9 @@ namespace MoneyManager
             {
                 Display.Print($"\n      View Menu".PadLeft(10), CC.DarkYellow);
                 Display.Print("\n ----------------------------------------------------------------------------\n", CC.DarkBlue);
-                Display.Print($" 1. Display Income\n" +
-                                " 2. Display Expenses\n" +
-                                " 3. Display All\n" +
+                Display.Print($" 1. Display All\n" +
+                                " 2. Display Income\n" +
+                                " 3. Display Expenses\n" +
                                 " 4. Sort list\n" +
                                 " 5. Set projection\n" +
                                 " 6. Back to Main Menu\n", CC.Cyan);
@@ -130,9 +132,9 @@ namespace MoneyManager
                 menuInput = Display.GetKey();
                 Console.Clear();
                 if (menuInput == "6") break;
-                if (menuInput == "1") ViewTransactions("1");
-                else if (menuInput == "2") ViewTransactions("2");
-                else if (menuInput == "3") ViewTransactions();
+                if (menuInput == "1") ViewTransactions();
+                else if (menuInput == "2") ViewTransactions("1");
+                else if (menuInput == "3") ViewTransactions("2");
                 else if (menuInput == "4") SortTransactions();
                 else if (menuInput == "5") EditProjection();
                 else
@@ -217,91 +219,76 @@ namespace MoneyManager
                 }
             }
         }
+        private static void EditInterestRate()
+        {
+            Display.Print("\n Enter the interest rate: ", CC.Cyan);
+            string input = Display.GetLine();
+            decimal value;
+            while (!Decimal.TryParse(input, out value) || value < 0 || value > 20)
+            {
+                Display.Print($"\n\n Enter a valid number between 0 - 20\n\n", CC.Red);
+                Display.Print("Enter the interest rate: ", CC.Cyan);
+                input = Display.GetLine();
+            }
+            Transaction.Interest = value;
+        }
+        private static void EditCompoundRate()
+        {
+            Display.Print("\n Enter the compound rate: ", CC.Cyan);
+            string input = Display.GetLine();
+            int value;
+            while (!Int32.TryParse(input, out value) || value < 1 || value > 12)
+            {
+                Display.Print($"\n\n Enter how many times per year interest is compounded. (1-12) \n\n", CC.Red);
+                Display.Print(" Enter the compound frequency: ", CC.Cyan);
+                input = Display.GetLine();
+            }
+            Transaction.Compound = value;
+        }
+        private static void EditYearsToProject()
+        {
+            Display.Print("\n Enter amount of years to project: ", CC.Cyan);
+            string input = Display.GetLine();
+            int value;
+            while (!Int32.TryParse(input, out value) || value < 0 || value > 50)
+            {
+                Display.Print($"\n\n Enter a valid number. (0 - 50)\n\n", CC.Red);
+                Display.Print(" Enter amount of years to project: ", CC.Cyan);
+                input = Display.GetLine();
+            }
+            Transaction.YearsToProject = value;
+        }
         public static void EditProjection()  //// TODO. Remove options and query user to type in all three variables right away. also change inflation to compoundFrequency
         {
             Display.Print($"\n      Application Settings".PadLeft(10), CC.DarkYellow);
             Display.Print("\n ----------------------------------------------------------------------------\n", CC.DarkBlue);
-            Display.Print($" 1. Change interest modifier\n" +
-                            " 2. Change inflation modifier\n" +
-                            " 3. Change how many years to project\n" +
+            Display.Print($" 1. Change estimated interest\n" +
+                            " 2. Change compound frequency\n" +
+                            " 3. Change amount of years to project\n" +
                             " 4. Back to Main Menu\n", CC.Cyan);
             Display.Print(" ----------------------------------------------------------------------------\n", CC.DarkBlue);
             Display.Print(" Select an option (space to edit all): ", CC.Green);
             string input = Display.GetKey();
             if (input == "1")
             {
-                Display.Print("\n Enter the interest rate: ", CC.Cyan);
-                input = Display.GetLine();
-                decimal value;
-                while (!Decimal.TryParse(input, out value) || value < 0 || value > 20)
-                {
-                    Display.Print($"\n\n Enter a valid number between 0 - 20\n\n", CC.Red);
-                    Display.Print("Enter the interest rate: ", CC.Cyan);
-                    input = Display.GetLine();
-                }
-                Transaction.Interest = value;
+                EditInterestRate();
                 return;
             }
             else if (input == "2")
             {
-                Display.Print("\n Enter the inflation rate: ", CC.Cyan);
-                input = Display.GetLine();
-                decimal value;
-                while (!Decimal.TryParse(input, out value) || value < 0 || value > 20)
-                {
-                    Display.Print($"\n\n Enter a valid number between 0 - 20\n\n", CC.Red);
-                    Display.Print("Enter the interest rate: ", CC.Cyan);
-                    input = Display.GetLine();
-                }
-                Transaction.Inflation = value;
+                EditCompoundRate();
                 return;
             }
             else if (input == "3")
             {
-                Display.Print("\nEnter how many years to project: ", CC.Cyan);
-                input = Display.GetLine();
-                int value;
-                while (!Int32.TryParse(input, out value) || value < 0 || value > 50)
-                {
-                    Display.Print($"\n\n Enter a valid number between 0 - 50\n\n", CC.Red);
-                    Display.Print("Enter the interest rate: ", CC.Cyan);
-                    input = Display.GetLine();
-                }
-                Transaction.YearsToProject = value;
+                EditYearsToProject();
                 return;
             }
             else if (input == " ")
             {
-                Display.Print("\n Enter the interest rate: ", CC.Cyan);
-                input = Display.GetLine();
-                decimal interestValue;
-                while (!Decimal.TryParse(input, out interestValue) || interestValue < 0 || interestValue > 20)
-                {
-                    Display.Print($"\n\n Enter a valid number between 0 - 20\n\n", CC.Red);
-                    Display.Print("Enter the interest rate: ", CC.Cyan);
-                    input = Display.GetLine();
-                }
-                Transaction.Interest = interestValue;
-                Display.Print("\n Enter the inflation rate: ", CC.Cyan);
-                input = Display.GetLine();
-                decimal infaltionValue;
-                while (!Decimal.TryParse(input, out infaltionValue) || infaltionValue < 0 || infaltionValue > 20)
-                {
-                    Display.Print($"\n\n Enter a valid number between 0 - 20\n\n", CC.Red);
-                    Display.Print("Enter the interest rate: ", CC.Cyan);
-                    input = Display.GetLine();
-                }
-                Transaction.Inflation = infaltionValue;
-                Display.Print("\nEnter how many years to project: ", CC.Cyan);
-                input = Display.GetLine();
-                int yearsValue;
-                while (!Int32.TryParse(input, out yearsValue) || yearsValue < 0 || yearsValue > 50)
-                {
-                    Display.Print($"\n\n Enter a valid number between 0 - 50\n\n", CC.Red);
-                    Display.Print("Enter the interest rate: ", CC.Cyan);
-                    input = Display.GetLine();
-                }
-                Transaction.YearsToProject = yearsValue;
+                EditInterestRate();
+                EditCompoundRate();
+                EditYearsToProject();
                 return;
             }
             else if (input == "4") return;
