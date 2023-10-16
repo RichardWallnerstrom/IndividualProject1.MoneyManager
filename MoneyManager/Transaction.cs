@@ -104,13 +104,13 @@ namespace MoneyManager
         }
         private static decimal CalculateProjection(decimal startMoney, decimal yearly)
         {
-            decimal rate = 1 + Interest / 100;
-            int compoundsPerYear = 12 / Compound;
+            decimal compoundsPerYear = Compound >= 1 && Compound <= 12 ? 12 / Compound : 12; //Divide 12 with CompoundRate to get amount of yearly compounds
+            decimal rate = 1 + (Interest / 100) / compoundsPerYear;
             decimal result = startMoney + yearly; 
-            for (int i = 1; i < YearsToProject; i++)
+            for (int i = 0; i < YearsToProject; i++)
             {
+                for (int j = 0; j < compoundsPerYear; j++) result *= rate;
                 result += yearly;
-                result *= rate;
             }
             return result;
         }
@@ -237,11 +237,12 @@ namespace MoneyManager
             Display.Print("\n Enter the compound rate: ", CC.Cyan);
             string input = Display.GetLine();
             int value;
-            while (!Int32.TryParse(input, out value) || value < 1 || value > 12)
+            while (!Int32.TryParse(input, out value) || !Regex.IsMatch(value.ToString(), @"^(1|3|6|12)$"))
             {
-                Display.Print($"\n\n Enter how many times per year interest is compounded. (1-12) \n\n", CC.Red);
+                Display.Print($"\n\n Enter how many times per year interest is compounded. (1, 3, 6 or 12) \n\n", CC.Red);
                 Display.Print(" Enter the compound frequency: ", CC.Cyan);
                 input = Display.GetLine();
+
             }
             Transaction.Compound = value;
         }
@@ -269,31 +270,18 @@ namespace MoneyManager
             Display.Print(" ----------------------------------------------------------------------------\n", CC.DarkBlue);
             Display.Print(" Select an option (space to edit all): ", CC.Green);
             string input = Display.GetKey();
-            if (input == "1")
-            {
-                EditInterestRate();
-                return;
-            }
-            else if (input == "2")
-            {
-                EditCompoundRate();
-                return;
-            }
-            else if (input == "3")
-            {
-                EditYearsToProject();
-                return;
-            }
+            if (input == "1") EditInterestRate();
+            else if (input == "2") EditCompoundRate();
+            else if (input == "3") EditYearsToProject();
+            else if (input == "4") return;
             else if (input == " ")
             {
                 EditInterestRate();
                 EditCompoundRate();
                 EditYearsToProject();
-                return;
             }
-            else if (input == "4") return;
             else Display.Print($"\n\n        {input} is not a valid option\n\n", CC.Red);
-            
+            return;
         }
         public static void AddTransaction()
         {
