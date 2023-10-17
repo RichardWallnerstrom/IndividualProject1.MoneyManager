@@ -12,12 +12,12 @@ namespace MoneyManager
 {
     public static class Display  
     {
+        public static bool StartAnimationDisplaySetting;
         public static void Print(string text, CC fgColor = CC.White, CC bgColor = CC.Black)
         {
             Console.ForegroundColor = fgColor;
             Console.BackgroundColor = bgColor;
             Console.Write(text);
-            Console.ResetColor();
         }
         public static string GetKey()
         {
@@ -30,8 +30,47 @@ namespace MoneyManager
             string userInput = Console.ReadLine();
             return (userInput != null) ? userInput : string.Empty;
         }
-        
+        public static void Help()
+        {
+            while (true)
+            {
+                Display.Print($"\n      Help Menu".PadLeft(10), CC.DarkYellow);
+                Display.Print("\n ----------------------------------------------------------------------------\n", CC.DarkBlue);
+                Display.Print($" 1. Adding or editing\n" +
+                                " 2. Calculating interest\n" +
+                                " 3. Display/Hide start animation\n" +
+                                " 4. Back to Main Menu\n", CC.Cyan);
+                Display.Print(" ----------------------------------------------------------------------------\n", CC.DarkBlue);
+                Display.Print(" Select an option: ", CC.Green);
+                string menuInput = Display.GetKey();
+                if (menuInput == "4") break;
 
+                if (menuInput == "1")
+                {
+                    Display.Print("\n Adding transactions \n",CC.DarkYellow);
+                    Display.Print(" ----------------------------------------------------------------------------\n", CC.DarkBlue);
+                    Display.Print("\n   When adding a new transaction choose if you are adding an income or expense.\n" +
+                                    "   When choosing month, please note that any transaction with an assigned month is considered\n" +
+                                    "   a one time transaction for this year only. It will not be taken into account for following years.\n" +
+                                    "   If the transaction is recurring use instead the \"monthly\" or \"yearly\" for that transaction.\n\n", CC.Cyan);
+                }
+                else if (menuInput == "2")
+                {
+                    Display.Print("\n Calculating Interest \n", CC.DarkYellow);
+                    Display.Print(" ----------------------------------------------------------------------------\n", CC.DarkBlue);
+                    Display.Print("\n   When calculating interest you have to specify interest rate, compound frequency and time period.\n" +
+                                    "   All transactions with an assigned month will be calculated for the first year alone. \n" +
+                                    "   Monthly and Yearly transactions will be calculated for each year in the time period.\n" +
+                                    "   If you are not sure about compound frequency use 12. This indicates that the interest" +
+                                    "   will be calculated once every 12 months which is quite common.\n\n", CC.Cyan);
+                }
+                else if (menuInput == "3")
+                {
+                    StartAnimationDisplaySetting = StartAnimationDisplaySetting == null ? true : !StartAnimationDisplaySetting;
+                }
+                
+            }
+        }
         public static void StartAnimation()
         {
             string message = "  Welcome to the Money Manager ";

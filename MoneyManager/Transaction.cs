@@ -29,6 +29,16 @@ namespace MoneyManager
         public static decimal Interest { get; set; }
         public static int YearsToProject { get; set; }
 
+        public static void LoadTestObjects()
+        {
+            TransactionList.Add(new Transaction("Salary", 28000, 0, true));
+            TransactionList.Add(new Transaction("Tip", 1000, 1, true));
+            TransactionList.Add(new Transaction("Rent", 8000, 0, false));
+            TransactionList.Add(new Transaction("Electricity", 1000, 0, false));
+            TransactionList.Add(new Transaction("Food", 3500, 0, false));
+            TransactionList.Add(new Transaction("Taxes", 100000, 13, false));
+            TransactionList.Add(new Transaction("Tax Return", 30000, 2, true));
+        }
         public static void ViewTransactions(string transactionType = "3")
         {
             decimal incomeTotal = 0, expensesTotal = 0, startMoney = 0;
@@ -223,43 +233,43 @@ namespace MoneyManager
         {
             Display.Print("\n Enter the interest rate: ", CC.Cyan);
             string input = Display.GetLine();
-            decimal value;
-            while (!Decimal.TryParse(input, out value) || value < 0 || value > 20)
+            decimal interestRate;
+            while (!Decimal.TryParse(input, out interestRate) || interestRate < 0 || interestRate > 20)
             {
                 Display.Print($"\n\n Enter a valid number between 0 - 20\n\n", CC.Red);
-                Display.Print("Enter the interest rate: ", CC.Cyan);
+                Display.Print(" Enter the interest rate: ", CC.Cyan);
                 input = Display.GetLine();
             }
-            Transaction.Interest = value;
+            Transaction.Interest = interestRate;
         }
         private static void EditCompoundRate()
         {
-            Display.Print("\n Enter the compound rate: ", CC.Cyan);
+            Display.Print("\n Enter the compound frequency: ", CC.Cyan);
             string input = Display.GetLine();
-            int value;
-            while (!Int32.TryParse(input, out value) || !Regex.IsMatch(value.ToString(), @"^(1|3|6|12)$"))
+            int compoundRate;
+            while (!Int32.TryParse(input, out compoundRate) || !Regex.IsMatch(compoundRate.ToString(), @"^(1|3|6|12)$"))
             {
                 Display.Print($"\n\n Enter how many times per year interest is compounded. (1, 3, 6 or 12) \n\n", CC.Red);
                 Display.Print(" Enter the compound frequency: ", CC.Cyan);
                 input = Display.GetLine();
 
             }
-            Transaction.Compound = value;
+            Transaction.Compound = compoundRate;
         }
         private static void EditYearsToProject()
         {
             Display.Print("\n Enter amount of years to project: ", CC.Cyan);
             string input = Display.GetLine();
-            int value;
-            while (!Int32.TryParse(input, out value) || value < 0 || value > 50)
+            int yearsToProject;
+            while (!Int32.TryParse(input, out yearsToProject) || yearsToProject < 0 || yearsToProject > 50)
             {
                 Display.Print($"\n\n Enter a valid number. (0 - 50)\n\n", CC.Red);
                 Display.Print(" Enter amount of years to project: ", CC.Cyan);
                 input = Display.GetLine();
             }
-            Transaction.YearsToProject = value;
+            Transaction.YearsToProject = yearsToProject;
         }
-        public static void EditProjection()  //// TODO. Remove options and query user to type in all three variables right away. also change inflation to compoundFrequency
+        public static void EditProjection()  
         {
             Display.Print($"\n      Application Settings".PadLeft(10), CC.DarkYellow);
             Display.Print("\n ----------------------------------------------------------------------------\n", CC.DarkBlue);
@@ -270,7 +280,7 @@ namespace MoneyManager
             Display.Print(" ----------------------------------------------------------------------------\n", CC.DarkBlue);
             Display.Print(" Select an option (space to edit all): ", CC.Green);
             string input = Display.GetKey();
-            if (input == "1") EditInterestRate();
+            if      (input == "1") EditInterestRate();
             else if (input == "2") EditCompoundRate();
             else if (input == "3") EditYearsToProject();
             else if (input == "4") return;
@@ -358,8 +368,8 @@ namespace MoneyManager
             {
                 Console.Clear();
                 Display.Print( $"\n\n        {input} is not a valid month.\n\n " +
-                                "       Type name of month or its number.\n " +
-                                "       Write \"0\" or Monthly for recurring transactions \n\n", CC.Red);
+                                "       Type name of month or its number for one time transactions. .\n " +
+                                "       Type (\"0\" or Monthly) or (\"13\" or Yearly) for recurring transactions.  \n\n", CC.Red);
                 Display.Print("\n Enter month: ", CC.Cyan);
                 input = Display.GetLine();
             }

@@ -1,53 +1,80 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using MoneyManager;
+using System.Text.Json;
 using CC = System.ConsoleColor;
 
 namespace MoneyManager
 {
     internal class Program
     {
+        private static void SaveToJson(string arg = "transactions.json")
+        {
+            string jsonString = JsonSerializer.Serialize(Transaction.TransactionList, new JsonSerializerOptions
+            {
+                WriteIndented = true
+            });
+            File.WriteAllText(arg, jsonString);
+        }
+        private static void LoadJson(string arg = "transactions.json")
+        {
+            try 
+            { 
+                string jsonString = File.ReadAllText(arg);
+                List<Transaction> transactions = JsonSerializer.Deserialize<List<Transaction>>(jsonString);
+            }
+            catch (FileNotFoundException) 
+            {
+                Display.Print($"\n\n {arg} not found.\n ");
+                Display.Print($"Will create {arg} upon saving and quitting. ", CC.Red); 
+                Thread.Sleep(3000); 
+                Console.Clear();
+
+
+            }
+
+        }
         static void Main()
         {
-            Transaction.TransactionList.Add(new Transaction("Salary", 25000, 0, true));
-            Transaction.TransactionList.Add(new Transaction("Tip", 1000, 1, true));
-            Transaction.TransactionList.Add(new Transaction("Rent", 8000, 0, false));
-            Transaction.TransactionList.Add(new Transaction("Electricity", 1000, 0, false));
-            Transaction.TransactionList.Add(new Transaction("Food", 2000, 0, false));
-            Transaction.TransactionList.Add(new Transaction("Taxes", 100000, 13, false));
-            Transaction.TransactionList.Add(new Transaction("Tax Return", 50000, 2, true));
 
-            //Display.StartAnimation();
+            LoadJson();
+            if (Display.StartAnimationDisplaySetting || Display.StartAnimationDisplaySetting == null) Display.StartAnimation();
             while (true) 
             {
+                Console.Clear();
                 Display.Print($"\n      Main Menu".PadLeft(10), CC.DarkYellow);
                 Display.Print("\n ----------------------------------------------------------------------------\n", CC.DarkBlue);
                 Display.Print($" 1. Add new transaction\n" +
                         " 2. View transactions\n" +
                         " 3. Edit transactions\n" +
-                        " 4. Save and Exit\n", CC.Cyan);
+                        " 4. Help and Options\n" +
+                        " 5. Save and Exit\n", CC.Cyan);
                 Display.Print(" ----------------------------------------------------------------------------\n", CC.DarkBlue);
-                Display.Print(" Select an option: ", CC.Green); string input = Display.GetKey();
+                Display.Print(" Select an option: ", CC.Green);
+                string input = Display.GetKey();
+                Console.Clear();
                 if (Regex.IsMatch(input, "^(1|a)$"))   // Add 
                 {
-                    Console.Clear();
                     Transaction.AddTransaction();
                 }
                 else if (Regex.IsMatch(input, "^(2|v)$"))   // View
                 {
-                    Console.Clear();
                     Transaction.ViewTransactions();
                     Transaction.ViewOptions();
                 }
                 else if (Regex.IsMatch(input, "^(3|e)$"))   // Edit
                 {
-                    Console.Clear();
                     Transaction.ViewTransactions();
                     Transaction.EditTransaction();
                 }
-                else if (Regex.IsMatch(input, "^(4|x)$"))   // Quit
+                else if (Regex.IsMatch(input, "^(4|o)$"))   // Options
                 {
-                    Display.Print("\n\n     Exiting application!\n\n", CC.Red);
+                    Display.Help();
+                }
+                else if (Regex.IsMatch(input, "^(5|x)$"))   // Quit
+                {
+                    SaveToJson();
+                    Display.Print("\n\n     Saving transactions...!\n\n", CC.Green);
+                    Display.Print("\n\n     Exiting application!\n\n", CC.Green);
                     break;
                 }
             }
