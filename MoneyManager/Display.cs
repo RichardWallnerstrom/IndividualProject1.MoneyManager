@@ -12,7 +12,6 @@ namespace MoneyManager
 {
     public static class Display  
     {
-        public static bool StartAnimationDisplaySetting;
         public static void Print(string text, CC fgColor = CC.White, CC bgColor = CC.Black)
         {
             Console.ForegroundColor = fgColor;
@@ -66,7 +65,6 @@ namespace MoneyManager
                 }
                 else if (menuInput == "3")
                 {
-                    StartAnimationDisplaySetting = StartAnimationDisplaySetting == null ? true : !StartAnimationDisplaySetting;
                 }
                 
             }

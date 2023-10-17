@@ -20,7 +20,7 @@ namespace MoneyManager
             try 
             { 
                 string jsonString = File.ReadAllText(arg);
-                List<Transaction> transactions = JsonSerializer.Deserialize<List<Transaction>>(jsonString);
+                Transaction.TransactionList = JsonSerializer.Deserialize<List<Transaction>>(jsonString);
             }
             catch (FileNotFoundException) 
             {
@@ -28,19 +28,15 @@ namespace MoneyManager
                 Display.Print($"Will create {arg} upon saving and quitting. ", CC.Red); 
                 Thread.Sleep(3000); 
                 Console.Clear();
-
-
             }
-
         }
         static void Main()
         {
-
             LoadJson();
-            if (Display.StartAnimationDisplaySetting || Display.StartAnimationDisplaySetting == null) Display.StartAnimation();
+            //Transaction.LoadTestObjects();
+            Display.StartAnimation();
             while (true) 
             {
-                Console.Clear();
                 Display.Print($"\n      Main Menu".PadLeft(10), CC.DarkYellow);
                 Display.Print("\n ----------------------------------------------------------------------------\n", CC.DarkBlue);
                 Display.Print($" 1. Add new transaction\n" +

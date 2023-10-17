@@ -38,6 +38,7 @@ namespace MoneyManager
             TransactionList.Add(new Transaction("Food", 3500, 0, false));
             TransactionList.Add(new Transaction("Taxes", 100000, 13, false));
             TransactionList.Add(new Transaction("Tax Return", 30000, 2, true));
+            Display.Print("Loaded test transactions");
         }
         public static void ViewTransactions(string transactionType = "3")
         {
@@ -141,7 +142,7 @@ namespace MoneyManager
                 Display.Print(" Select an option: ", CC.Green);
                 menuInput = Display.GetKey();
                 Console.Clear();
-                if (menuInput == "6") break;
+                if (Regex.IsMatch(menuInput, "^(6|`|r)$")) break;
                 if (menuInput == "1") ViewTransactions();
                 else if (menuInput == "2") ViewTransactions("1");
                 else if (menuInput == "3") ViewTransactions("2");
@@ -203,7 +204,12 @@ namespace MoneyManager
                 Display.Print(" ----------------------------------------------------------------------------\n", CC.DarkBlue);
                 Display.Print(" Select an option: ", CC.Green);
                 menuInput = Display.GetKey();
-                if (menuInput == "5") break;
+                if (Regex.IsMatch(menuInput, "^(6|`|r)$"))
+                {
+                    Console.Clear();
+                    break;
+                }
+
                 if (Regex.IsMatch(menuInput, "^[1-4]$"))
                 {
                     Display.Print("\n Which transaction do you wish to edit? ", CC.Cyan);
@@ -280,10 +286,10 @@ namespace MoneyManager
             Display.Print(" ----------------------------------------------------------------------------\n", CC.DarkBlue);
             Display.Print(" Select an option (space to edit all): ", CC.Green);
             string input = Display.GetKey();
-            if      (input == "1") EditInterestRate();
+            if (Regex.IsMatch(input, "^(4|`|r)$")) return;
+            else if (input == "1") EditInterestRate();
             else if (input == "2") EditCompoundRate();
             else if (input == "3") EditYearsToProject();
-            else if (input == "4") return;
             else if (input == " ")
             {
                 EditInterestRate();
@@ -318,7 +324,7 @@ namespace MoneyManager
                 Console.Clear();
                 if (Regex.IsMatch(input, "^(1|2)$"))
                     return input == "1" ? "1" : "2";
-                else if (input == "3")
+                else if (Regex.IsMatch(input, "^(3|`|r)$"))
                     return "-1";
                 else
                     Display.Print($"        {input} is not a valid option \n Select an option between 1-3\n");
