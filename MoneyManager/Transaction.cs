@@ -44,7 +44,7 @@ namespace MoneyManager
         {
             decimal incomeTotal = 0, expensesTotal = 0, startMoney = 0;
             Display.Print($"\n {"Title",-21} {"Amount",-18} {"Date",-19} {"Type",-18}", CC.DarkYellow); 
-            Display.Print("\n ----------------------------------------------------------------------------\n", CC.DarkBlue);
+            Display.Print("\n ----------------------------------------------------------------------------", CC.DarkBlue);
             foreach (Transaction item in TransactionList)
             {
                 string incomeOrExpense = item.IsIncome ? "Income" : "Expense";
@@ -89,7 +89,6 @@ namespace MoneyManager
                         startMoney -= item.Amount;
                 }
             }
-            string balanceString = (YearsToProject == 0) ? "\n Total balance for this year: " : $"\n Total projection after {YearsToProject} years: ";
             decimal yearlyIncrease = incomeTotal - expensesTotal;
             decimal totalBalance = CalculateProjection(startMoney, yearlyIncrease);
             ConsoleColor balanceColor = yearlyIncrease > 0 ? ConsoleColor.Green : ConsoleColor.Red; 
@@ -104,14 +103,18 @@ namespace MoneyManager
             Display.Print("\n ----------------------------------------------------------------------------", CC.DarkBlue);
             // Totals
             balanceColor = totalBalance > 0 ? ConsoleColor.Green : ConsoleColor.Red;
-            if (YearsToProject > 0 && Interest > 0) 
+            if (YearsToProject > 0 && Interest > 0 && transactionType != "2") 
             {
                 Display.Print($"\n Total interest after {YearsToProject} years:    ");
                 Display.Print($"{totalBalance - ((yearlyIncrease * YearsToProject)):C}", CC.Green);
             }
+            string balanceString = (YearsToProject == 0) ? "\n Total balance for this year: " : $"\n Total projection after {YearsToProject} years: ";
             Display.Print(balanceString);
-            Display.Print($" {totalBalance:C}", balanceColor);
-            Display.Print("\n ----------------------------------------------------------------------------\n", CC.DarkBlue);
+            if (transactionType == "2") // If expenses only
+                Display.Print($" {(yearlyIncrease * YearsToProject == 0 ? 1 : YearsToProject) + startMoney:C}", balanceColor); //BROKEN. Fix math
+            else 
+                Display.Print($" {totalBalance:C}", balanceColor);
+            Display.Print("\n ----------------------------------------------------------------------------", CC.DarkBlue);
         }
         private static decimal CalculateProjection(decimal startMoney, decimal yearly)
         {
@@ -147,7 +150,7 @@ namespace MoneyManager
                 else if (menuInput == "2") ViewTransactions("1");
                 else if (menuInput == "3") ViewTransactions("2");
                 else if (menuInput == "4") SortTransactions();
-                else if (menuInput == "5") EditProjection();
+                else if (Regex.IsMatch(menuInput, "^(5|s|   )$")) EditProjection();
                 else
                 {
                     Console.Clear();
@@ -277,11 +280,12 @@ namespace MoneyManager
         }
         public static void EditProjection()  
         {
-            Display.Print($"\n      Application Settings".PadLeft(10), CC.DarkYellow);
+            ViewTransactions();
+            Display.Print($"\n      Projection Settings".PadLeft(10), CC.DarkYellow);
             Display.Print("\n ----------------------------------------------------------------------------\n", CC.DarkBlue);
-            Display.Print($" 1. Change estimated interest\n" +
-                            " 2. Change compound frequency\n" +
-                            " 3. Change amount of years to project\n" +
+            Display.Print( $" 1. Change estimated interest: ({Interest}%)\n" +
+                           $" 2. Change compound frequency: ({Compound} times a year) \n" +
+                           $" 3. Change time projection:    ({YearsToProject})\n" +
                             " 4. Back to Main Menu\n", CC.Cyan);
             Display.Print(" ----------------------------------------------------------------------------\n", CC.DarkBlue);
             Display.Print(" Select an option (space to edit all): ", CC.Green);
@@ -297,6 +301,7 @@ namespace MoneyManager
                 EditYearsToProject();
             }
             else Display.Print($"\n\n        {input} is not a valid option\n\n", CC.Red);
+            Console.Clear();
             return;
         }
         public static void AddTransaction()

@@ -42,8 +42,8 @@ namespace MoneyManager
                 Display.Print(" ----------------------------------------------------------------------------\n", CC.DarkBlue);
                 Display.Print(" Select an option: ", CC.Green);
                 string menuInput = Display.GetKey();
+                Console.Clear();
                 if (menuInput == "4") break;
-
                 if (menuInput == "1")
                 {
                     Display.Print("\n Adding transactions \n",CC.DarkYellow);
@@ -60,7 +60,7 @@ namespace MoneyManager
                     Display.Print("\n   When calculating interest you have to specify interest rate, compound frequency and time period.\n" +
                                     "   All transactions with an assigned month will be calculated for the first year alone. \n" +
                                     "   Monthly and Yearly transactions will be calculated for each year in the time period.\n" +
-                                    "   If you are not sure about compound frequency use 12. This indicates that the interest" +
+                                    "   If you are not sure about compound frequency use 12. This indicates that the interest\n" +
                                     "   will be calculated once every 12 months which is quite common.\n\n", CC.Cyan);
                 }
                 else if (menuInput == "3")
