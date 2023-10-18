@@ -48,20 +48,21 @@ namespace MoneyManager
                 {
                     Display.Print("\n Adding transactions \n",CC.DarkYellow);
                     Display.Print(" ----------------------------------------------------------------------------\n", CC.DarkBlue);
-                    Display.Print("\n   When adding a new transaction choose if you are adding an income or expense.\n" +
-                                    "   When choosing month, please note that any transaction with an assigned month is considered\n" +
-                                    "   a one time transaction for this year only. It will not be taken into account for following years.\n" +
-                                    "   If the transaction is recurring use instead the \"monthly\" or \"yearly\" for that transaction.\n\n", CC.Cyan);
+                    Display.Print("\n   Choose if the transaction is income or expense.\n" +
+                                    "   Any transaction with an assigned month (for example May) is considered\n" +
+                                    "   a one time transaction for the first year. It will not be taken into \n" +
+                                    "   account for following years. If the transaction is recurring use instead\n" +
+                                    "   the \"monthly\" or \"yearly\" for that transaction.\n\n", CC.Cyan);
                 }
                 else if (menuInput == "2")
                 {
                     Display.Print("\n Calculating Interest \n", CC.DarkYellow);
                     Display.Print(" ----------------------------------------------------------------------------\n", CC.DarkBlue);
-                    Display.Print("\n   When calculating interest you have to specify interest rate, compound frequency and time period.\n" +
-                                    "   All transactions with an assigned month will be calculated for the first year alone. \n" +
-                                    "   Monthly and Yearly transactions will be calculated for each year in the time period.\n" +
-                                    "   If you are not sure about compound frequency use 12. This indicates that the interest\n" +
-                                    "   will be calculated once every 12 months which is quite common.\n\n", CC.Cyan);
+                    Display.Print("\n   When calculating interest you have to specify interest rate, compound\n" +
+                                    "   frequency and time period. If you are not sure about compound frequency\n" +
+                                    "   use 12. This indicates that the interest will be calculated once every\n" +
+                                    "   12 months which is quite common. If your result is negative make sure\n" +
+                                    "   interest is set to 0 or interest will be calculated incorrectly here.\n", CC.Cyan);
                 }
                 else if (menuInput == "3")
                 {

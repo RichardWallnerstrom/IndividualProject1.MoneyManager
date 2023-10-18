@@ -111,7 +111,7 @@ namespace MoneyManager
             string balanceString = (YearsToProject == 0) ? "\n Total balance for this year: " : $"\n Total projection after {YearsToProject} years: ";
             Display.Print(balanceString);
             if (transactionType == "2") // If expenses only
-                Display.Print($" {(yearlyIncrease * YearsToProject == 0 ? 1 : YearsToProject) + startMoney:C}", balanceColor); //BROKEN. Fix math
+                Display.Print($" {(yearlyIncrease * YearsToProject == 0 ? 1 : YearsToProject) + startMoney:C}", balanceColor); /////// TODO  /////// BROKEN. result = singles only??
             else 
                 Display.Print($" {totalBalance:C}", balanceColor);
             Display.Print("\n ----------------------------------------------------------------------------", CC.DarkBlue);
@@ -390,7 +390,7 @@ namespace MoneyManager
         {
             DateTime parsedDate;
             int month;
-            if (input == "0" || input.ToLower() == "monthly") return 0; //Monthly
+            if (input == "0" || input.ToLower() == "monthly") return 0; //Monthly        ///////// TODO. This is broken. Accepts any input and makes it monthly ///////////
             if (input == "13" || input.ToLower() == "yearly") return 13; //Yearly
             if (Int32.TryParse(input, out month)) return month;
             if (DateTime.TryParseExact(input, "MMMM", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out parsedDate))
