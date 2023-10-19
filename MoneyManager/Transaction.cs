@@ -40,53 +40,86 @@ namespace MoneyManager
             TransactionList.Add(new Transaction("Tax Return", 30000, 2, true));
             Display.Print("Loaded test transactions");
         }
-        public static void ViewTransactions(string transactionType = "3")
+        private static void SumIncome(Transaction transaction, ref decimal startMoney, ref decimal incomeTotal)
+        {
+                if (transaction.Date == 13 || transaction.Date == 0) 
+                    incomeTotal += (transaction.Date == 13) ? transaction.Amount : transaction.Amount * 12;
+                else startMoney += transaction.Amount;
+        }
+        private static void SumExpenses(Transaction transaction, ref decimal startMoney, ref decimal expensesTotal)
+        { 
+            if (transaction.Date == 13 || transaction.Date == 0) 
+                expensesTotal += (transaction.Date == 13) ? transaction.Amount : transaction.Amount * 12;
+            else startMoney -= transaction.Amount;    
+        }
+        public static void ViewTransactions(string transactionType = "3") // Defaults to showing all transactions
         {
             decimal incomeTotal = 0, expensesTotal = 0, startMoney = 0;  // startMoney = all months with an assigned month (like may) and not yearly or monthly
             Display.Print($"\n {"Title",-21} {"Amount",-18} {"Date",-19} {"Type",-18}", CC.DarkYellow); 
             Display.Print("\n ----------------------------------------------------------------------------", CC.DarkBlue);
-            foreach (Transaction item in TransactionList)
+            foreach (Transaction transaction in TransactionList)
             {
-                string incomeOrExpense = item.IsIncome ? "Income" : "Expense";
-                ConsoleColor color = item.IsIncome ? ConsoleColor.Green : ConsoleColor.Red;
-                string itemString = $"\n {item.Title,-20}{item.Amount,-20:C}{IntToMonth(item.Date),-20}";
-                if (transactionType == "3") // All transactions
+                string incomeOrExpense = transaction.IsIncome ? "Income" : "Expense";
+                ConsoleColor color = transaction.IsIncome ? ConsoleColor.Green : ConsoleColor.Red;
+                string transactionString = $"\n {transaction.Title,-20}{transaction.Amount,-20:C}{IntToMonth(transaction.Date),-20}";
+                if (transactionType == "3")                 // All transactions
                 {
-                    Display.Print(itemString, CC.Cyan);
+                    Display.Print(transactionString, CC.Cyan);
                     Display.Print(incomeOrExpense, color);
-                    if (item.IsIncome)                      // Check if its monthly, yearly or single transaction and then calculate properly
-                    {
-                        if (item.Date == 13 || item.Date == 0) // Yearly or monthly
-                            incomeTotal += (item.Date == 13) ? item.Amount : item.Amount * 12;
-                        else 
-                            startMoney += item.Amount;
-                    }
-                    else
-                    {
-                        if (item.Date == 13 || item.Date == 0) // Yearly or monthly
-                            expensesTotal += (item.Date == 13) ? item.Amount : item.Amount * 12;
-                        else 
-                            startMoney -= item.Amount;
-                    }                     
+                    if (transaction.IsIncome) 
+                        SumIncome(transaction, ref startMoney, ref incomeTotal);
+                    else 
+                        SumExpenses(transaction, ref startMoney, ref expensesTotal);
                 }
-                else if (item.IsIncome && transactionType == "1")  // Income only
+                else if (transaction.IsIncome && transactionType == "1")  // Income only
                 {
-                    Display.Print(itemString, CC.Cyan);
+                    Display.Print(transactionString, CC.Cyan);
                     Display.Print(incomeOrExpense, color);
-                    if (item.Date == 13 || item.Date == 0) // Yearly or monthly
-                        incomeTotal += (item.Date == 13) ? item.Amount : item.Amount * 12;
-                    else
-                        startMoney += item.Amount;
+                    SumIncome(transaction, ref startMoney, ref incomeTotal);
                 }
-                else if (!item.IsIncome && transactionType == "2") // Expenses only
+                else if (!transaction.IsIncome && transactionType == "2") // Expenses only
                 {
-                    Display.Print(itemString, CC.Cyan);
+                    Display.Print(transactionString, CC.Cyan);
                     Display.Print(incomeOrExpense, color);
-                    if (item.Date == 13 || item.Date == 0) // Yearly or monthly
-                        expensesTotal += (item.Date == 13) ? item.Amount : item.Amount * 12;
-                    else
-                        startMoney -= item.Amount;
+                    SumExpenses(transaction, ref startMoney, ref expensesTotal);
                 }
+                //if (transactionType == "3") // All transactions
+                //{
+                //    Display.Print(transactionString, CC.Cyan);
+                //    Display.Print(incomeOrExpense, color);
+                //    if (item.IsIncome)                      // Check if its monthly, yearly or single transaction and then calculate properly
+                //    {
+                //        if (item.Date == 13 || item.Date == 0) // Yearly or monthly
+                //            incomeTotal += (item.Date == 13) ? item.Amount : item.Amount * 12;
+                //        else 
+                //            startMoney += item.Amount;
+                //    }
+                //    else
+                //    {
+                //        if (item.Date == 13 || item.Date == 0) // Yearly or monthly
+                //            expensesTotal += (item.Date == 13) ? item.Amount : item.Amount * 12;
+                //        else 
+                //            startMoney -= item.Amount;
+                //    }                     
+                //}
+                //else if (item.IsIncome && transactionType == "1")  // Income only
+                //{
+                //    Display.Print(transactionString, CC.Cyan);
+                //    Display.Print(incomeOrExpense, color);
+                //    if (item.Date == 13 || item.Date == 0) // Yearly or monthly
+                //        incomeTotal += (item.Date == 13) ? item.Amount : item.Amount * 12;
+                //    else
+                //        startMoney += item.Amount;
+                //}
+                //else if (!item.IsIncome && transactionType == "2") // Expenses only
+                //{
+                //    Display.Print(transactionString, CC.Cyan);
+                //    Display.Print(incomeOrExpense, color);
+                //    if (item.Date == 13 || item.Date == 0) // Yearly or monthly
+                //        expensesTotal += (item.Date == 13) ? item.Amount : item.Amount * 12;
+                //    else
+                //        startMoney -= item.Amount;
+                //}
             }
             decimal yearlyIncrease = incomeTotal - expensesTotal;
             decimal totalBalance = CalculateProjection(startMoney, yearlyIncrease);
