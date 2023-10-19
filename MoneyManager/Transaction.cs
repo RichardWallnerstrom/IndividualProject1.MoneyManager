@@ -106,11 +106,11 @@ namespace MoneyManager
             if (YearsToProject > 0 && Interest > 0 && transactionType != "2") 
             {
                 Display.Print($"\n Total interest after {YearsToProject} years:    ");
-                Display.Print($"{totalBalance - ((yearlyIncrease * YearsToProject)):C}", CC.Green);
+                Display.Print($"{totalBalance - startMoney - ((yearlyIncrease * YearsToProject)):C}", CC.Green);
             }
             string balanceString = (YearsToProject == 0) ? "\n Total balance for this year: " : $"\n Total projection after {YearsToProject} years: ";
             Display.Print(balanceString);
-            if (transactionType == "2") // If expenses only
+            if (transactionType == "2" || yearlyIncrease < 0) // If yearlyIncrease is negative dont calculate interest
                 Display.Print($" {(YearsToProject == 0 ? yearlyIncrease : yearlyIncrease * YearsToProject) + startMoney:C}", balanceColor); 
             else 
                 Display.Print($" {totalBalance:C}", balanceColor);
@@ -119,12 +119,19 @@ namespace MoneyManager
         private static decimal CalculateProjection(decimal startMoney, decimal yearly)
         {
             decimal compoundsPerYear = Compound >= 1 && Compound <= 12 ? 12 / Compound : 12; //Divide 12 with CompoundRate to get amount of yearly compounds
-            decimal rate = 1 + (Interest / 100) / compoundsPerYear;
-            decimal result = startMoney + yearly; 
-            for (int i = 0; i < YearsToProject; i++)
+            decimal rate = ((Interest / compoundsPerYear) / 100 ) + 1; 
+            decimal result = startMoney + yearly;
+            for (int i = 1; i < YearsToProject; i++) // Start on one since we already got startMoney + yearly
             {
-                for (int j = 0; j < compoundsPerYear; j++) result *= rate;
+                for (int j = 0; j < compoundsPerYear; j++)
+                {
+                    Console.WriteLine($" result: {result} rate: {rate}");
+                    result *= rate;
+                    Console.WriteLine($"new result: {result}");
+                }
+                Console.WriteLine($"yearly: {yearly}");
                 result += yearly;
+                Console.WriteLine($"result += yearly: {result}");
             }
             return result;
         }
@@ -283,9 +290,9 @@ namespace MoneyManager
             ViewTransactions();
             Display.Print($"\n      Projection Settings".PadLeft(10), CC.DarkYellow);
             Display.Print("\n ----------------------------------------------------------------------------\n", CC.DarkBlue);
-            Display.Print( $" 1. Change estimated interest: ({Interest}%)\n" +
-                           $" 2. Change compound frequency: ({Compound} times a year) \n" +
-                           $" 3. Change time projection:    ({YearsToProject})\n" +
+            Display.Print( $" 1. Change estimated interest: (Yearly estimated interest {Interest}%)\n" +
+                           $" 2. Change compound frequency: (Compound every {Compound} months ) \n" +
+                           $" 3. Change time projection:    ({YearsToProject} years to project)\n" +
                             " 4. Back to Main Menu\n", CC.Cyan);
             Display.Print(" ----------------------------------------------------------------------------\n", CC.DarkBlue);
             Display.Print(" Select an option (space to edit all): ", CC.Green);
