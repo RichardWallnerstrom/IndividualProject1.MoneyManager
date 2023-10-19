@@ -54,8 +54,7 @@ namespace MoneyManager
                 {
                     Display.Print(itemString, CC.Cyan);
                     Display.Print(incomeOrExpense, color);
-                    // Check if its monthly, yearly or single transaction and then calculate properly
-                    if (item.IsIncome)
+                    if (item.IsIncome)                      // Check if its monthly, yearly or single transaction and then calculate properly
                     {
                         if (item.Date == 13 || item.Date == 0) // Yearly or monthly
                             incomeTotal += (item.Date == 13) ? item.Amount : item.Amount * 12;
@@ -70,7 +69,7 @@ namespace MoneyManager
                             startMoney -= item.Amount;
                     }                     
                 }
-                else if (item.IsIncome && transactionType == "1")
+                else if (item.IsIncome && transactionType == "1")  // Income only
                 {
                     Display.Print(itemString, CC.Cyan);
                     Display.Print(incomeOrExpense, color);
@@ -79,7 +78,7 @@ namespace MoneyManager
                     else
                         startMoney += item.Amount;
                 }
-                else if (!item.IsIncome && transactionType == "2")
+                else if (!item.IsIncome && transactionType == "2") // Expenses only
                 {
                     Display.Print(itemString, CC.Cyan);
                     Display.Print(incomeOrExpense, color);
@@ -118,20 +117,16 @@ namespace MoneyManager
         }
         private static decimal CalculateProjection(decimal startMoney, decimal yearly)
         {
-            decimal compoundsPerYear = Compound >= 1 && Compound <= 12 ? 12 / Compound : 12; //Divide 12 with CompoundRate to get amount of yearly compounds
+            decimal compoundsPerYear = Compound >= 1 && Compound <= 12 ? 12 / Compound : 1; //Divide to 12 to get yearly compounds. if Compound not set set to 1 (annually)
             decimal rate = ((Interest / compoundsPerYear) / 100 ) + 1; 
             decimal result = startMoney + yearly;
             for (int i = 1; i < YearsToProject; i++) // Start on one since we already got startMoney + yearly
             {
                 for (int j = 0; j < compoundsPerYear; j++)
                 {
-                    Console.WriteLine($" result: {result} rate: {rate}");
                     result *= rate;
-                    Console.WriteLine($"new result: {result}");
                 }
-                Console.WriteLine($"yearly: {yearly}");
                 result += yearly;
-                Console.WriteLine($"result += yearly: {result}");
             }
             return result;
         }
@@ -234,7 +229,12 @@ namespace MoneyManager
                     else if (menuInput == "1") transaction.Title = GetValidTitle();
                     else if (menuInput == "2") transaction.Amount = GetValidAmount();
                     else if (menuInput == "3") transaction.Date = GetValidMonth();
-                    else if (menuInput == "4") TransactionList.Remove(transaction);
+                    else if (menuInput == "4")
+                    {
+                        Display.Print($"\n{transaction} removed!", CC.Green);
+                        TransactionList.Remove(transaction);
+                    }
+
                     break;
                 }
                 else
@@ -244,6 +244,32 @@ namespace MoneyManager
                     Display.Print($"\n\n        {menuInput} is not a valid option\n\n", CC.Red);
                 }
             }
+        }
+        public static void EditProjection()
+        {
+            ViewTransactions();
+            Display.Print($"\n      Projection Settings".PadLeft(10), CC.DarkYellow);
+            Display.Print("\n ----------------------------------------------------------------------------\n", CC.DarkBlue);
+            Display.Print($" 1. Change estimated interest: (Yearly estimated interest {Interest}%)\n" +
+                           $" 2. Change compound frequency: (Compound every {Compound} months ) \n" +
+                           $" 3. Change time projection:    ({YearsToProject} years to project)\n" +
+                            " 4. Back to Main Menu\n", CC.Cyan);
+            Display.Print(" ----------------------------------------------------------------------------\n", CC.DarkBlue);
+            Display.Print(" Select an option (space to edit all): ", CC.Green);
+            string input = Display.GetKey();
+            if (Regex.IsMatch(input, "^(4|`|r)$")) return;
+            else if (input == "1") EditInterestRate();
+            else if (input == "2") EditCompoundRate();
+            else if (input == "3") EditYearsToProject();
+            else if (input == " ")
+            {
+                EditInterestRate();
+                EditCompoundRate();
+                EditYearsToProject();
+            }
+            else Display.Print($"\n\n        {input} is not a valid option\n\n", CC.Red);
+            Console.Clear();
+            return;
         }
         private static void EditInterestRate()
         {
@@ -284,32 +310,6 @@ namespace MoneyManager
                 input = Display.GetLine();
             }
             Transaction.YearsToProject = yearsToProject;
-        }
-        public static void EditProjection()  
-        {
-            ViewTransactions();
-            Display.Print($"\n      Projection Settings".PadLeft(10), CC.DarkYellow);
-            Display.Print("\n ----------------------------------------------------------------------------\n", CC.DarkBlue);
-            Display.Print( $" 1. Change estimated interest: (Yearly estimated interest {Interest}%)\n" +
-                           $" 2. Change compound frequency: (Compound every {Compound} months ) \n" +
-                           $" 3. Change time projection:    ({YearsToProject} years to project)\n" +
-                            " 4. Back to Main Menu\n", CC.Cyan);
-            Display.Print(" ----------------------------------------------------------------------------\n", CC.DarkBlue);
-            Display.Print(" Select an option (space to edit all): ", CC.Green);
-            string input = Display.GetKey();
-            if (Regex.IsMatch(input, "^(4|`|r)$")) return;
-            else if (input == "1") EditInterestRate();
-            else if (input == "2") EditCompoundRate();
-            else if (input == "3") EditYearsToProject();
-            else if (input == " ")
-            {
-                EditInterestRate();
-                EditCompoundRate();
-                EditYearsToProject();
-            }
-            else Display.Print($"\n\n        {input} is not a valid option\n\n", CC.Red);
-            Console.Clear();
-            return;
         }
         public static void AddTransaction()
         {
@@ -407,7 +407,7 @@ namespace MoneyManager
             else
             {
                 Display.Print($"\n\n        Failed to parse {input}\n\n");
-                return month = 0; 
+                return month = -1; 
             }
         }
         public static string IntToMonth(int monthNumber) 
