@@ -42,7 +42,7 @@ namespace MoneyManager
         }
         public static void ViewTransactions(string transactionType = "3")
         {
-            decimal incomeTotal = 0, expensesTotal = 0, startMoney = 0;
+            decimal incomeTotal = 0, expensesTotal = 0, startMoney = 0;  // startMoney = all months with an assigned month (like may) and not yearly or monthly
             Display.Print($"\n {"Title",-21} {"Amount",-18} {"Date",-19} {"Type",-18}", CC.DarkYellow); 
             Display.Print("\n ----------------------------------------------------------------------------", CC.DarkBlue);
             foreach (Transaction item in TransactionList)
@@ -111,7 +111,7 @@ namespace MoneyManager
             string balanceString = (YearsToProject == 0) ? "\n Total balance for this year: " : $"\n Total projection after {YearsToProject} years: ";
             Display.Print(balanceString);
             if (transactionType == "2") // If expenses only
-                Display.Print($" {(yearlyIncrease * YearsToProject == 0 ? 1 : YearsToProject) + startMoney:C}", balanceColor); /////// TODO  /////// BROKEN. result = singles only??
+                Display.Print($" {(YearsToProject == 0 ? yearlyIncrease : yearlyIncrease * YearsToProject) + startMoney:C}", balanceColor); 
             else 
                 Display.Print($" {totalBalance:C}", balanceColor);
             Display.Print("\n ----------------------------------------------------------------------------", CC.DarkBlue);
