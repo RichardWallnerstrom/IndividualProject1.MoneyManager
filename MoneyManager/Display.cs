@@ -37,7 +37,7 @@ namespace MoneyManager
                 Display.Print("\n ----------------------------------------------------------------------------\n", CC.DarkBlue);
                 Display.Print($" 1. Adding or editing\n" +
                                 " 2. Calculating interest\n" +
-                                " 3. Display/Hide start animation\n" +
+                                " 3. About\n" +
                                 " 4. Back to Main Menu\n", CC.Cyan);
                 Display.Print(" ----------------------------------------------------------------------------\n", CC.DarkBlue);
                 Display.Print(" Select an option: ", CC.Green);
@@ -65,6 +65,12 @@ namespace MoneyManager
                 }
                 else if (menuInput == "3")
                 {
+                    Display.Print("\n About \n", CC.DarkYellow);
+                    Display.Print(" ----------------------------------------------------------------------------\n", CC.DarkBlue);
+                    Display.Print("\n   When calculating interest you have to specify interest rate, compound\n" +
+                                    "   frequency and time period. If you are not sure about compound frequency\n" +
+                                    "   use 12. This indicates that the interest will be calculated once every\n" +
+                                    "   12 months which is quite common.\n", CC.Cyan);
                 }
                 
             }

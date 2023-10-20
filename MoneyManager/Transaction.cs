@@ -77,7 +77,7 @@ namespace MoneyManager
             ConsoleColor balanceColor = yearlyIncrease > 0 ? ConsoleColor.Green : ConsoleColor.Red; 
             //Yearly
             Display.Print("\n ----------------------------------------------------------------------------", CC.DarkBlue);
-            Display.Print($"\n Singles balance:  ");
+            Display.Print($"\n Startup capital:  ");
             Display.Print($"{startMoney:C}", startMoney > 0 ? ConsoleColor.Green : ConsoleColor.Red);
             Display.Print("\n ----------------------------------------------------------------------------", CC.DarkBlue);
             Display.Print($"\n Yearly income:    ", CC.Cyan); Display.Print($"{incomeTotal:C}", CC.Green);
@@ -169,7 +169,8 @@ namespace MoneyManager
                 ViewTransactions();
                 return;
             }
-            Display.Print("\n\n Type: \"R\" to sort reversed.\n Type anything else to continue:  ", CC.Cyan);  // Reversing section
+            Display.Print($"Sorting by {input}");
+            Display.Print("\n\n Type: \"R\" to sort reversed.\n Type anything else to sort normally:  ", CC.Cyan);  // Reversing section
             bool wantsReversed = (Display.GetKey().ToLower() == "r"); 
             if (input.ToLower() == "title")
                 TransactionList = (wantsReversed) ? TransactionList.OrderBy(t => t.Title).Reverse().ToList() : TransactionList.OrderBy(t => t.Title).ToList();
@@ -183,6 +184,7 @@ namespace MoneyManager
             {
                 Console.Clear();
                 Display.Print($"\n\n       {input} is not a valid attribute\n\n", CC.Red);
+                Display.Print("You can sort by any field: Title, Amount, Date or Type");
                 return;
             }
             Console.Clear();
@@ -205,7 +207,7 @@ namespace MoneyManager
                 Display.Print(" ----------------------------------------------------------------------------\n", CC.DarkBlue);
                 Display.Print(" Select an option: ", CC.Green);
                 menuInput = Display.GetKey();
-                if (Regex.IsMatch(menuInput, "^(6|`|r)$"))
+                if (Regex.IsMatch(menuInput, "^(5|`|r)$"))
                 {
                     Console.Clear();
                     break;
