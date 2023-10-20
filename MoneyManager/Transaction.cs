@@ -266,6 +266,7 @@ namespace MoneyManager
             }
             else Display.Print($"\n\n        {input} is not a valid option\n\n", CC.Red);
             Console.Clear();
+            ViewTransactions();
             return;
         }
         private static void EditInterestRate()

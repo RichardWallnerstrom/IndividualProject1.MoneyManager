@@ -52,9 +52,21 @@ namespace MoneyManager
                 }
                 else if (Regex.IsMatch(input, "^(6|x)$"))   // Quit
                 {
-                    SaveToJson();
-                    Display.Print("\n\n     Exiting application!\n\n", CC.Green);
-                    break;
+                    Display.Print(" Type \"q\" to exit without saving.\n " +
+                        "Type anything else to save: ");
+                    input = Display.GetKey();
+                    Console.Clear();
+                    if (input == "q") 
+                    {
+                        Display.Print("\n Exiting without saving!");
+                        break;
+                    }
+                    else
+                    {
+                        SaveToJson();
+                        Display.Print("\n Exiting application!");
+                        break;
+                    }
                 }
             }
         }
@@ -62,7 +74,7 @@ namespace MoneyManager
         {
             Display.Print($" Enter filename to save to (leave blank to use file: {FileName}): ");
             string fileName = Display.GetLine();
-            FileName = fileName == String.Empty ? FileName : fileName;
+            FileName = (fileName == String.Empty) ? FileName : fileName;
             string jsonString = JsonSerializer.Serialize(Transaction.TransactionList, new JsonSerializerOptions
             {
                 WriteIndented = true
@@ -73,23 +85,19 @@ namespace MoneyManager
                 File.WriteAllText(FileName, jsonString);
                 Display.Print("\n\n     Transactions saved successfully!\n\n", CC.Green);
             }
+            catch (IOException ex)
+            {
+                Display.Print($" Input error! \n", CC.Red);
+                Display.Print($"{fileName} is not valid .\n" +
+                                $" Use only letters, numbers and periods for the file name.  \n");
+                Display.Print($"{ex.Message} \n", CC.Red);
+            }
             catch (UnauthorizedAccessException ex)  //If no permission
             {
                 Display.Print($"\n\n Cannot write to {FileName}!! " +
-                                "\n\n File may be write protected. " +
+                                "\n\n File may be write protected." +
+                                "\n Or you maybe have used / in file name. " +
                                 $"\n {ex.Message}\n", CC.Red);
-                try
-                {
-                    Display.Print("\n Attempting to write to: transactionslist-backup.json", CC.Green);
-                    File.WriteAllText("transactionslist-backup.json", jsonString);
-                    Display.Print("\n\n     Transactions saved successfully!\n\n", CC.Green);
-                }
-                catch (UnauthorizedAccessException ex2) // If no permission for second file
-                {
-                    Display.Print($"\n\n Cannot write to transactionslist-backup.json either " +
-                                    "\n\n You probably dont have permission to write in that directory " +
-                                    $"\n {ex2.Message}\n", CC.Red);
-                }
             }
         }
         private static void LoadJson()
