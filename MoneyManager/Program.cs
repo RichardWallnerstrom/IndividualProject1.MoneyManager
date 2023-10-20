@@ -114,15 +114,15 @@ namespace MoneyManager
             }
             catch (FileNotFoundException)
             {
-                Display.Print($"\n\n {fileName} not found.\n ", CC.Red);
-                Display.Print($" Will create {fileName} upon saving. \n", CC.Green);
+                Display.Print($"\n\n File: {fileName} not found.\n ", CC.Red);
+                Display.Print($" Will create file: {fileName} upon saving. \n", CC.Green);
                 FileName = fileName;
                 Thread.Sleep(3000);
                 Console.Clear();
             }
             catch (JsonException ex)
             {
-                Display.Print($" Failed to load json file. It might be corrupted. \n", CC.Red);
+                Display.Print($" Failed to load json file: {fileName}. It might be corrupted. \n", CC.Red);
                 Display.Print(" If you have manually edited it try to restore it.\n" +
                                 $" Otherwise delete {fileName} and we will create a new one for you. \n");
                 Display.Print($"{ex.Message} \n", CC.Red);
@@ -131,7 +131,7 @@ namespace MoneyManager
             catch (UnauthorizedAccessException ex)
             {
                 Display.Print($" Unauthorized action! \n", CC.Red);
-                Display.Print(" You prbably tried to use / in your file path.\n" +
+                Display.Print(" You might have tried to use / in your file name.\n" +
                                 $" Use only letters, numbers and periods for the file name.  \n");
                 Display.Print($"{ex.Message} \n", CC.Red);
                 Environment.Exit(0);
@@ -139,7 +139,7 @@ namespace MoneyManager
             catch (IOException ex)
             {
                 Display.Print($" Input error! \n", CC.Red);
-                Display.Print($"{fileName} is not valid .\n" +
+                Display.Print($"{fileName} is not valid a valid filename .\n" +
                                 $" Use only letters, numbers and periods for the file name.  \n");
                 Display.Print($"{ex.Message} \n", CC.Red);
                 Environment.Exit(0);

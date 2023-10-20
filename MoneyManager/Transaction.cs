@@ -28,18 +28,6 @@ namespace MoneyManager
         public static int Compound { get; set; }
         public static decimal Interest { get; set; }
         public static int YearsToProject { get; set; }
-
-        public static void LoadTestObjects()
-        {
-            TransactionList.Add(new Transaction("Salary", 28000, 0, true));
-            TransactionList.Add(new Transaction("Tip", 1000, 1, true));
-            TransactionList.Add(new Transaction("Rent", 8000, 0, false));
-            TransactionList.Add(new Transaction("Electricity", 1000, 0, false));
-            TransactionList.Add(new Transaction("Food", 3500, 0, false));
-            TransactionList.Add(new Transaction("Taxes", 100000, 13, false));
-            TransactionList.Add(new Transaction("Tax Return", 30000, 2, true));
-            Display.Print(" Loaded test transactions\n");
-        }
         public static void ViewTransactions(string transactionType = "3") // Defaults to showing all transactions
         {
             decimal incomeTotal = 0, expensesTotal = 0, startMoney = 0;  // startMoney = all months with an assigned month (like may) and not yearly or monthly
