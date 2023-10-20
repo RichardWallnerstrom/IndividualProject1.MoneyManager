@@ -61,8 +61,7 @@ namespace MoneyManager
                     Display.Print("\n   When calculating interest you have to specify interest rate, compound\n" +
                                     "   frequency and time period. If you are not sure about compound frequency\n" +
                                     "   use 12. This indicates that the interest will be calculated once every\n" +
-                                    "   12 months which is quite common. If your result is negative make sure\n" +
-                                    "   interest is set to 0 or interest will be calculated incorrectly here.\n", CC.Cyan);
+                                    "   12 months which is quite common.\n", CC.Cyan);
                 }
                 else if (menuInput == "3")
                 {

@@ -7,11 +7,12 @@ namespace MoneyManager
 {
     internal class Program
     {
+        public static string FileName;
         static void Main()
         {
             Console.SetWindowSize(77, 40);
             //Transaction.LoadTestObjects();
-           // Display.StartAnimation();
+            Display.StartAnimation();
             LoadJson();
             while (true) 
             {
@@ -57,21 +58,24 @@ namespace MoneyManager
                 }
             }
         }
-        private static void SaveToJson(string arg = "transactions.json")
+        private static void SaveToJson()
         {
+            Display.Print($" Enter filename to save to (leave blank to use file: {FileName}): ");
+            string fileName = Display.GetLine();
+            FileName = fileName == String.Empty ? FileName : fileName;
             string jsonString = JsonSerializer.Serialize(Transaction.TransactionList, new JsonSerializerOptions
             {
                 WriteIndented = true
             });
             try
             {
-                Display.Print($"\n\n     Writing to {arg}\n\n", CC.Green);
-                File.WriteAllText(arg, jsonString);
+                Display.Print($"\n\n     Writing to {FileName}\n\n", CC.Green);
+                File.WriteAllText(FileName, jsonString);
                 Display.Print("\n\n     Transactions saved successfully!\n\n", CC.Green);
             }
             catch (UnauthorizedAccessException ex)  //If no permission
             {
-                Display.Print($"\n\n Cannot write to {arg}!! " +
+                Display.Print($"\n\n Cannot write to {FileName}!! " +
                                 "\n\n File may be write protected. " +
                                 $"\n {ex.Message}\n", CC.Red);
                 try
@@ -88,18 +92,23 @@ namespace MoneyManager
                 }
             }
         }
-        private static void LoadJson(string arg = "transactions.json")
+        private static void LoadJson()
         {
+            Display.Print($" Enter filename to load (leave blank for default): ");
+            string fileName = Display.GetLine();
+            fileName = fileName == String.Empty ? "transactions.json" : fileName;
             try
             {
-                string jsonString = File.ReadAllText(arg);
+                string jsonString = File.ReadAllText(fileName);
                 Transaction.TransactionList = JsonSerializer.Deserialize<List<Transaction>>(jsonString);
-                Display.Print($"\n\n Loaded file: {arg}.\n ", CC.Green);
+                Display.Print($"\n\n Loaded file: {fileName}.\n ", CC.Green);
+                FileName = fileName;
             }
             catch (FileNotFoundException)
             {
-                Display.Print($"\n\n {arg} not found.\n ", CC.Red);
-                Display.Print($" Will create {arg} upon saving and quitting. \n", CC.Green);
+                Display.Print($"\n\n {fileName} not found.\n ", CC.Red);
+                Display.Print($" Will create {fileName} upon saving. \n", CC.Green);
+                FileName = fileName;
                 Thread.Sleep(3000);
                 Console.Clear();
             }
@@ -107,7 +116,7 @@ namespace MoneyManager
             {
                 Display.Print($" Failed to load json file. It might be corrupted. \n", CC.Red);
                 Display.Print(" If you have manually edited it try to restore it.\n" +
-                                $" Otherwise delete {arg} and we will create a new one for you. \n");
+                                $" Otherwise delete {fileName} and we will create a new one for you. \n");
                 Display.Print($"{ex.Message} \n", CC.Cyan);
                 Environment.Exit(1);
             }
