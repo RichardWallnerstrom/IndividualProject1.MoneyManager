@@ -96,7 +96,7 @@ namespace MoneyManager
         {
             Display.Print($" Enter filename to load (leave blank for default): ");
             string fileName = Display.GetLine();
-            fileName = fileName == String.Empty ? "transactions.json" : fileName;
+            fileName = (fileName == String.Empty || fileName == " ") ? "transactions.json" : fileName;
             try
             {
                 string jsonString = File.ReadAllText(fileName);
@@ -117,8 +117,24 @@ namespace MoneyManager
                 Display.Print($" Failed to load json file. It might be corrupted. \n", CC.Red);
                 Display.Print(" If you have manually edited it try to restore it.\n" +
                                 $" Otherwise delete {fileName} and we will create a new one for you. \n");
-                Display.Print($"{ex.Message} \n", CC.Cyan);
-                Environment.Exit(1);
+                Display.Print($"{ex.Message} \n", CC.Red);
+                Environment.Exit(0);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                Display.Print($" Unauthorized action! \n", CC.Red);
+                Display.Print(" You prbably tried to use / in your file path.\n" +
+                                $" Use only letters, numbers and periods for the file name.  \n");
+                Display.Print($"{ex.Message} \n", CC.Red);
+                Environment.Exit(0);
+            }
+            catch (IOException ex)
+            {
+                Display.Print($" Input error! \n", CC.Red);
+                Display.Print($"{fileName} is not valid .\n" +
+                                $" Use only letters, numbers and periods for the file name.  \n");
+                Display.Print($"{ex.Message} \n", CC.Red);
+                Environment.Exit(0);
             }
         }
     }

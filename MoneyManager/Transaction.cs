@@ -38,7 +38,7 @@ namespace MoneyManager
             TransactionList.Add(new Transaction("Food", 3500, 0, false));
             TransactionList.Add(new Transaction("Taxes", 100000, 13, false));
             TransactionList.Add(new Transaction("Tax Return", 30000, 2, true));
-            Display.Print("Loaded test transactions");
+            Display.Print(" Loaded test transactions\n");
         }
         public static void ViewTransactions(string transactionType = "3") // Defaults to showing all transactions
         {
@@ -247,9 +247,9 @@ namespace MoneyManager
             ViewTransactions();
             Display.Print($"\n      Projection Settings".PadLeft(10), CC.DarkYellow);
             Display.Print("\n ----------------------------------------------------------------------------\n", CC.DarkBlue);
-            Display.Print($" 1. Change estimated interest: (Yearly estimated interest {Interest}%)\n" +
-                           $" 2. Change compound frequency: (Compound every {Compound} months ) \n" +
-                           $" 3. Change time projection:    ({YearsToProject} years to project)\n" +
+            Display.Print( $" 1. Change estimated interest: ({Interest} percent)\n" +
+                           $" 2. Change compound frequency: ({Compound} months) \n" +
+                           $" 3. Change time projection:    ({YearsToProject} years)\n" +
                             " 4. Back to Main Menu\n", CC.Cyan);
             Display.Print(" ----------------------------------------------------------------------------\n", CC.DarkBlue);
             Display.Print(" Select an option (space to edit all): ", CC.Green);
@@ -270,7 +270,7 @@ namespace MoneyManager
         }
         private static void EditInterestRate()
         {
-            Display.Print("\n Enter the interest rate: ", CC.Cyan);
+            Display.Print("\n Enter the yearly interest rate: ", CC.Cyan);
             string input = Display.GetLine();
             decimal interestRate;
             while (!Decimal.TryParse(input, out interestRate) || interestRate < 0 || interestRate > 20)
@@ -288,7 +288,7 @@ namespace MoneyManager
             int compoundRate;
             while (!Int32.TryParse(input, out compoundRate) || !Regex.IsMatch(compoundRate.ToString(), @"^(1|3|6|12)$"))
             {
-                Display.Print($"\n\n Enter how many times per year interest is compounded. (1, 3, 6 or 12) \n\n", CC.Red);
+                Display.Print($"\n\n Enter amount of months between each compound. (1, 3, 6 or 12) \n\n", CC.Red);
                 Display.Print(" Enter the compound frequency: ", CC.Cyan);
                 input = Display.GetLine();
 
@@ -357,7 +357,6 @@ namespace MoneyManager
                 Display.Print($"\n\n        Title must be between 3 and 13 letters. \n\n", CC.Red);
                 Display.Print("\n Enter Title: ", CC.Cyan);
                 title = Display.GetLine();
-                
             }
             return title;
         }
