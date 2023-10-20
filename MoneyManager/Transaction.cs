@@ -31,7 +31,7 @@ namespace MoneyManager
         public static void ViewTransactions(string transactionType = "3") // Defaults to showing all transactions
         {
             decimal incomeTotal = 0, expensesTotal = 0, startMoney = 0;  // startMoney = all months with an assigned month (like may) and not yearly or monthly
-            Display.Print($"\n {"Title",-21} {"Amount",-18} {"Date",-19} {"Type",-18}", CC.DarkYellow); 
+            Display.Print($"\n {"Title",-21} {"Amount",-18} {"Date",-19} {"Type",-18}", CC.DarkYellow);
             Display.Print("\n ----------------------------------------------------------------------------", CC.DarkBlue);
             foreach (Transaction transaction in TransactionList)
             {
@@ -42,9 +42,9 @@ namespace MoneyManager
                 {
                     Display.Print(transactionString, CC.Cyan);
                     Display.Print(incomeOrExpense, color);
-                    if (transaction.IsIncome) 
+                    if (transaction.IsIncome)
                         SumIncome(transaction, ref startMoney, ref incomeTotal);
-                    else 
+                    else
                         SumExpenses(transaction, ref startMoney, ref expensesTotal);
                 }
                 else if (transaction.IsIncome && transactionType == "1")  // Income only
@@ -62,7 +62,7 @@ namespace MoneyManager
             }
             decimal yearlyIncrease = incomeTotal - expensesTotal;
             decimal totalBalance = CalculateProjection(startMoney, yearlyIncrease);
-            ConsoleColor balanceColor = yearlyIncrease > 0 ? ConsoleColor.Green : ConsoleColor.Red; 
+            ConsoleColor balanceColor = yearlyIncrease > 0 ? ConsoleColor.Green : ConsoleColor.Red;
             //Yearly
             Display.Print("\n ----------------------------------------------------------------------------", CC.DarkBlue);
             Display.Print($"\n Startup capital:  ");
@@ -74,7 +74,7 @@ namespace MoneyManager
             Display.Print("\n ----------------------------------------------------------------------------", CC.DarkBlue);
             // Totals
             balanceColor = totalBalance > 0 ? ConsoleColor.Green : ConsoleColor.Red;
-            if (YearsToProject > 0 && Interest > 0 && transactionType != "2") 
+            if (YearsToProject > 0 && Interest > 0 && transactionType != "2")
             {
                 Display.Print($"\n Total interest after {YearsToProject} years:    ");
                 Display.Print($"{totalBalance - startMoney - ((yearlyIncrease * YearsToProject)):C}", CC.Green);
@@ -82,8 +82,8 @@ namespace MoneyManager
             string balanceString = (YearsToProject == 0) ? "\n Total balance for this year: " : $"\n Total projection after {YearsToProject} years: ";
             Display.Print(balanceString);
             if (transactionType == "2" || yearlyIncrease < 0) // If yearlyIncrease is negative dont calculate interest
-                Display.Print($" {(YearsToProject == 0 ? yearlyIncrease : yearlyIncrease * YearsToProject) + startMoney:C}", balanceColor); 
-            else 
+                Display.Print($" {(YearsToProject == 0 ? yearlyIncrease : yearlyIncrease * YearsToProject) + startMoney:C}", balanceColor);
+            else
                 Display.Print($" {totalBalance:C}", balanceColor);
             Display.Print("\n ----------------------------------------------------------------------------", CC.DarkBlue);
         }
@@ -102,7 +102,7 @@ namespace MoneyManager
         private static decimal CalculateProjection(decimal startMoney, decimal yearly)
         {
             decimal compoundsPerYear = Compound >= 1 && Compound <= 12 ? 12 / Compound : 1; //Divide to 12 to get yearly compounds. if Compound not set set to 1 (annually)
-            decimal rate = ((Interest / compoundsPerYear) / 100 ) + 1; 
+            decimal rate = ((Interest / compoundsPerYear) / 100) + 1;
             decimal result = startMoney + yearly;
             for (int i = 1; i < YearsToProject; i++) // Start on one since we already got startMoney + yearly
             {
@@ -151,28 +151,27 @@ namespace MoneyManager
             ViewTransactions();
             Display.Print("\n\n Sort list by: ", CC.Cyan);  // Sorting section
             string input = Console.ReadLine();
-            if (input == null) 
+            if (input == null)
             {
                 Display.Print("\n\n     No input detected. \n\n", CC.Red);
                 ViewTransactions();
                 return;
             }
-            Display.Print($"Sorting by {input}");
             Display.Print("\n\n Type: \"R\" to sort reversed.\n Type anything else to sort normally:  ", CC.Cyan);  // Reversing section
-            bool wantsReversed = (Display.GetKey().ToLower() == "r"); 
-            if (input.ToLower() == "title")
+            bool wantsReversed = (Display.GetKey().ToLower() == "r");
+            if (input.ToLower() == "title" || input == "1")
                 TransactionList = (wantsReversed) ? TransactionList.OrderBy(t => t.Title).Reverse().ToList() : TransactionList.OrderBy(t => t.Title).ToList();
-            else if (input.ToLower() == "amount")
+            else if (input.ToLower() == "amount" || input == "2")
                 TransactionList = (wantsReversed) ? TransactionList.OrderBy(t => t.Amount).Reverse().ToList() : TransactionList.OrderBy(t => t.Amount).ToList();
-            else if (input.ToLower() == "date")
+            else if (input.ToLower() == "date" || input == "3")
                 TransactionList = (wantsReversed) ? TransactionList.OrderBy(t => t.Date).Reverse().ToList() : TransactionList.OrderBy(t => t.Date).ToList();
-            else if (input.ToLower() == "type")
+            else if (input.ToLower() == "type" || input == "4")
                 TransactionList = (wantsReversed) ? TransactionList.OrderBy(t => t.IsIncome).ToList() : TransactionList.OrderBy(t => t.IsIncome).Reverse().ToList();
             else
             {
                 Console.Clear();
                 Display.Print($"\n\n       {input} is not a valid attribute\n\n", CC.Red);
-                Display.Print("You can sort by any field: Title, Amount, Date or Type");
+                Display.Print(" You can sort by any field: Title, Amount, Date or Type\n", CC.Cyan);
                 return;
             }
             Console.Clear();

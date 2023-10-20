@@ -43,7 +43,7 @@ namespace MoneyManager
                 Display.Print(" Select an option: ", CC.Green);
                 string menuInput = Display.GetKey();
                 Console.Clear();
-                if (menuInput == "4") break;
+                if (menuInput == "4" || menuInput == "`") break;
                 if (menuInput == "1")
                 {
                     Display.Print("\n Adding transactions \n",CC.DarkYellow);

@@ -11,7 +11,6 @@ namespace MoneyManager
         static void Main()
         {
             Console.SetWindowSize(77, 40);
-            //Transaction.LoadTestObjects();
             Display.StartAnimation();
             LoadJson();
             while (true) 
@@ -42,7 +41,7 @@ namespace MoneyManager
                     Transaction.ViewTransactions();
                     Transaction.EditTransaction();
                 }
-                else if (Regex.IsMatch(input, "^(4|o)$"))   // Save
+                else if (Regex.IsMatch(input, "^(4|s)$"))   // Save
                 {
                     SaveToJson();
                 }
@@ -110,7 +109,7 @@ namespace MoneyManager
                 string jsonString = File.ReadAllText(fileName);
                 Transaction.TransactionList = JsonSerializer.Deserialize<List<Transaction>>(jsonString);
                 Display.Print($"\n\n Loaded file: {fileName}.\n ", CC.Green);
-                FileName = fileName;
+                FileName = fileName; // Set global filename
             }
             catch (FileNotFoundException)
             {
